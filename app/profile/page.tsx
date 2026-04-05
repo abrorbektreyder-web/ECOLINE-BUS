@@ -19,11 +19,11 @@ export default function ProfilePage() {
   ];
 
   const menuItems = [
-    { label: 'Shaxsiy ma\'lumotlar', icon: 'person', desc: 'Ism, telefon va pasport' },
-    { label: 'Mening chiptalarim', icon: 'confirmation_number', desc: 'Faol va o\'tgan safarlar' },
-    { label: 'Bildirishnomalar', icon: 'notifications', desc: 'Sayohat haqida eslatmalar' },
-    { label: 'Xavfsizlik', icon: 'shield_lock', desc: 'Parol va auth' },
-    { label: 'Yordam markazi', icon: 'help', desc: '24/7 qo\'llab-quvvatlash' },
+    { label: t('personal_info'), icon: 'person', desc: t('personal_info_desc') },
+    { label: t('my_trips'), icon: 'confirmation_number', desc: t('my_trips_desc') },
+    { label: t('notifications'), icon: 'notifications', desc: t('notifications_desc') },
+    { label: t('security'), icon: 'shield_lock', desc: t('security_desc') },
+    { label: t('help_center'), icon: 'help', desc: t('help_center_desc') },
   ];
 
   return (
@@ -34,7 +34,7 @@ export default function ProfilePage() {
           <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-slate-800 transition-colors">
             <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100 font-bold">arrow_back</span>
           </button>
-          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">Mening Profilim</h1>
+          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">{t('my_profile')}</h1>
         </div>
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">
             <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
@@ -65,7 +65,7 @@ export default function ProfilePage() {
 
         {/* Language Section - New */}
         <section className="space-y-3">
-           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2 mb-4">ILOVA TILI</h3>
+           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2 mb-4">{t('app_language')}</h3>
            <div className="flex gap-2">
               {[
                 { code: 'uz', name: 'O\'zbekcha' },
@@ -89,7 +89,7 @@ export default function ProfilePage() {
 
         {/* Menu Section */}
         <section className="space-y-3">
-           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2 mb-4">ASOSIY SOZLAMALAR</h3>
+           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2 mb-4">{t('main_settings')}</h3>
            <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-outline-variant/20 dark:border-slate-700/50 overflow-hidden shadow-sm">
               {menuItems.map((item, idx) => (
                 <div key={idx} className={`p-5 flex items-center justify-between group cursor-pointer active:bg-surface-container-high dark:active:bg-slate-700 transition-colors ${idx !== menuItems.length - 1 ? 'border-b border-outline-variant/10 dark:border-slate-700/50' : ''}`}>
@@ -111,7 +111,7 @@ export default function ProfilePage() {
         {/* Logout */}
         <button className="w-full py-5 rounded-[2rem] border-2 border-indigo-600/20 dark:border-indigo-400/20 text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
            <span className="material-symbols-outlined text-sm">logout</span>
-           CHIQISH
+           {t('logout')}
         </button>
       </main>
 

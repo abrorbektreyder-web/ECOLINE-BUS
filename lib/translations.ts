@@ -22,7 +22,19 @@ export const translations = {
     passport: "Pasport seriyasi",
     email: "Elektron pochta",
     phone: "Telefon raqami",
-    payment_method: "To'lov usuli"
+    payment_method: "To'lov usuli",
+    app_language: "Ilova tili",
+    personal_info: "Shaxsiy ma'lumotlar",
+    notifications: "Bildirishnomalar",
+    security: "Xavfsizlik",
+    help_center: "Yordam markazi",
+    main_settings: "Asosiy sozlamalar",
+    my_profile: "Mening profilim",
+    personal_info_desc: "Ism, telefon va pasport",
+    my_trips_desc: "Faol va o'tgan safarlar",
+    notifications_desc: "Sayohat haqida eslatmalar",
+    security_desc: "Parol va xavfsizlik",
+    help_center_desc: "24/7 qo'llab-quvvatlash"
   },
   ru: {
     search: "Поиск",
@@ -47,7 +59,19 @@ export const translations = {
     passport: "Серия паспорта",
     email: "Электронная почта",
     phone: "Номер телефона",
-    payment_method: "Способ оплаты"
+    payment_method: "Способ оплаты",
+    app_language: "Язык приложения",
+    personal_info: "Персональные данные",
+    notifications: "Уведомления",
+    security: "Безопасность",
+    help_center: "Центр помощи",
+    main_settings: "Основные настройки",
+    my_profile: "Мой профиль",
+    personal_info_desc: "Имя, телефон и паспорт",
+    my_trips_desc: "Активные и прошлые поездки",
+    notifications_desc: "Напоминания о поездках",
+    security_desc: "Пароль и безопасность",
+    help_center_desc: "Поддержка 24/7"
   },
   en: {
     search: "Search",
@@ -72,7 +96,19 @@ export const translations = {
     passport: "Passport ID",
     email: "Email Address",
     phone: "Phone Number",
-    payment_method: "Payment Method"
+    payment_method: "Payment Method",
+    app_language: "App Language",
+    personal_info: "Personal Info",
+    notifications: "Notifications",
+    security: "Security",
+    help_center: "Help Center",
+    main_settings: "Main Settings",
+    my_profile: "My Profile",
+    personal_info_desc: "Name, phone and passport",
+    my_trips_desc: "Active and past trips",
+    notifications_desc: "Travel reminders",
+    security_desc: "Password and safety",
+    help_center_desc: "24/7 Support"
   }
 };
 
