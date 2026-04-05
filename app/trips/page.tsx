@@ -3,42 +3,44 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { useLanguage } from '@/components/LanguageProvider';
 import BottomNav from '@/components/BottomNav';
 
-export default function MyTrips() {
+export default function TripsPage() {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
 
-  const activeTrips = [
-    {
-      id: 'B-2934',
-      from: 'Tashkent',
-      to: 'Guangzhou',
-      date: '12 Aprel',
-      time: '08:00',
-      status: 'Tasdiqlangan',
-      gate: 'A-12',
-    }
-  ];
+  const [activeTab, setActiveTab ] = React.useState<'active' | 'past'>('active');
 
-  const pastTrips = [
-    {
-      id: 'B-1022',
-      from: 'Paris',
-      to: 'London',
-      date: '2 Mart',
-      time: '14:30',
-      status: 'Tugalangan',
-    },
-    {
-      id: 'B-0982',
-      from: 'Berlin',
-      to: 'Paris',
-      date: '15 Fevral',
-      time: '09:15',
-      status: 'Tugalangan',
-    }
-  ];
+  const trips = {
+    active: [
+      {
+        id: 'TRS-001',
+        from: 'Toshkent',
+        to: 'Buxoro',
+        date: '2026-04-06',
+        time: '08:30',
+        bus: 'Premium Comfort',
+        seat: '12A',
+        status: 'On Time',
+        price: '150,000'
+      }
+    ],
+    past: [
+      {
+        id: 'TRS-000',
+        from: 'Samarqand',
+        to: 'Toshkent',
+        date: '2026-03-28',
+        time: '14:00',
+        bus: 'Eco Standard',
+        seat: '05C',
+        status: 'Completed',
+        price: '85,000'
+      }
+    ]
+  };
 
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 pb-32 transition-colors duration-300">
@@ -48,80 +50,80 @@ export default function MyTrips() {
           <button onClick={() => router.push('/')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-slate-800 transition-colors">
             <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100 font-bold">arrow_back</span>
           </button>
-          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">Mening Safarlarim</h1>
+          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">{t('my_trips')}</h1>
         </div>
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">
             <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
         </button>
       </header>
 
-      <main className="px-6 pt-6 max-w-2xl mx-auto space-y-8">
-        {/* Active Trips */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between px-2">
-            <h2 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em]">KELGUSI SAFARLAR</h2>
-            <span className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></span>
-          </div>
-          
-          {activeTrips.map((trip) => (
-            <div key={trip.id} className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-6 shadow-[0px_4px_12px_rgba(25,28,29,0.03)] border border-outline-variant/20 dark:border-slate-700/50 relative overflow-hidden group">
-               <div className="flex justify-between items-start mb-6">
-                 <div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full">{trip.id}</span>
-                 </div>
-                 <span className="text-[10px] font-bold text-tertiary dark:text-emerald-400 flex items-center gap-1">
-                   <span className="material-symbols-outlined text-xs">check_circle</span>
-                   {trip.status}
-                 </span>
-               </div>
+      <main className="px-6 pt-6 max-w-2xl mx-auto space-y-6">
+        {/* Tabs */}
+        <div className="bg-surface-container-low dark:bg-slate-800 p-1.5 rounded-2xl flex gap-1">
+          <button 
+            onClick={() => setActiveTab('active')}
+            className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'active' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm' : 'text-on-surface-variant/60 dark:text-slate-500'}`}
+          >
+            Active
+          </button>
+          <button 
+            onClick={() => setActiveTab('past')}
+            className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'past' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm' : 'text-on-surface-variant/60 dark:text-slate-500'}`}
+          >
+            Past
+          </button>
+        </div>
 
-               <div className="flex items-center justify-between relative mb-6 px-2">
-                  <div className="flex flex-col">
-                     <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100">{trip.from}</span>
-                     <span className="text-xs font-medium text-on-surface-variant/60 dark:text-slate-500">{trip.date}, {trip.time}</span>
+        {/* Trips List */}
+        <div className="space-y-4">
+          {trips[activeTab].map((trip) => (
+            <div key={trip.id} className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-6 border border-outline-variant/20 dark:border-slate-700/50 shadow-sm space-y-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">{trip.id}</span>
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-black text-indigo-900 dark:text-white">{trip.from}</h3>
+                    <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm">arrow_forward</span>
+                    <h3 className="text-xl font-black text-indigo-900 dark:text-white">{trip.to}</h3>
                   </div>
-                  
-                  <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-20">
-                     <span className="material-symbols-outlined text-indigo-900 dark:text-slate-400">directions_bus</span>
-                     <div className="w-12 h-[1px] bg-indigo-900 dark:bg-slate-400 border-t border-dashed"></div>
-                  </div>
+                </div>
+                <div className={`px-3 py-1 rounded-full ${trip.status === 'Completed' ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'bg-emerald-50 dark:bg-emerald-900/30'}`}>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${trip.status === 'Completed' ? 'text-indigo-600 dark:text-indigo-400' : 'text-emerald-600 dark:text-emerald-400'}`}>{trip.status}</span>
+                </div>
+              </div>
 
-                  <div className="flex flex-col text-right">
-                     <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100">{trip.to}</span>
-                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">Terminal {trip.gate}</span>
-                  </div>
-               </div>
+              <div className="grid grid-cols-2 gap-6 py-4 border-y border-dashed border-outline-variant/30 dark:border-slate-700/50">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-on-surface-variant/50 dark:text-slate-500 uppercase tracking-widest">Date & Time</span>
+                  <p className="font-bold text-sm">{trip.date} • {trip.time}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-on-surface-variant/50 dark:text-slate-500 uppercase tracking-widest">Bus & Seat</span>
+                  <p className="font-bold text-sm">{trip.bus} • {trip.seat}</p>
+                </div>
+              </div>
 
-               <button className="w-full py-4 bg-indigo-900 dark:bg-indigo-600 text-white rounded-3xl font-bold text-sm tracking-wide active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-sm">qr_code_2</span>
-                  CHIPTANI KO'RISH
-               </button>
+              <div className="flex gap-3">
+                {activeTab === 'active' && (
+                  <button 
+                    onClick={() => router.push(`/trips/track/${trip.id}`)}
+                    className="flex-1 py-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-black uppercase tracking-widest text-[10px] hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm">location_on</span>
+                    {t('track_bus')}
+                  </button>
+                )}
+                <button 
+                  onClick={() => router.push(`/ticket/${trip.id}`)}
+                  className="flex-1 py-4 rounded-2xl bg-surface-container dark:bg-slate-700 text-on-surface dark:text-white font-black uppercase tracking-widest text-[10px] hover:bg-surface-container-high dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-sm">confirmation_number</span>
+                  View Ticket
+                </button>
+              </div>
             </div>
           ))}
-        </section>
-
-        {/* Reys History */}
-        <section className="space-y-4">
-          <h2 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">TARIX</h2>
-          <div className="space-y-3">
-             {pastTrips.map((trip) => (
-                <div key={trip.id} className="bg-white dark:bg-slate-800/50 rounded-3xl p-5 border border-outline-variant/10 dark:border-white/5 flex items-center justify-between group grayscale hover:grayscale-0 transition-all opacity-80 hover:opacity-100">
-                   <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-surface-container dark:bg-slate-700 flex items-center justify-center">
-                         <span className="material-symbols-outlined text-on-surface-variant dark:text-slate-400">history</span>
-                      </div>
-                      <div className="flex flex-col">
-                         <div className="flex items-center gap-2">
-                            <span className="font-black text-indigo-900 dark:text-indigo-100 text-sm">{trip.from} - {trip.to}</span>
-                         </div>
-                         <span className="text-[10px] font-medium text-on-surface-variant/60 dark:text-slate-500">{trip.date} • {trip.status}</span>
-                      </div>
-                   </div>
-                   <span className="material-symbols-outlined text-outline/30 dark:text-slate-600">chevron_right</span>
-                </div>
-             ))}
-          </div>
-        </section>
+        </div>
       </main>
 
       <BottomNav />

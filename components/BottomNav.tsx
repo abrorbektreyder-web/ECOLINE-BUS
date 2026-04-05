@@ -12,7 +12,7 @@ export default function BottomNav() {
 
   const navItems = [
     { label: t('search'), icon: 'search', path: '/' },
-    { label: t('my_trips'), icon: 'directions_bus', path: '/trips' },
+    { label: t('my_trips'), icon: 'confirmation_number', path: '/trips' },
     { label: t('wallet'), icon: 'account_balance_wallet', path: '/wallet' },
     { label: t('profile'), icon: 'person', path: '/profile' },
   ];

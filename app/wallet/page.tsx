@@ -80,6 +80,26 @@ export default function WalletPage() {
            <span className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] mb-2 block text-center">{t('total_balance')}</span>
            <h2 className="text-5xl font-black text-indigo-900 dark:text-white tracking-tighter tabular-nums mb-1">${totalBalance.toLocaleString()}</h2>
            <span className="text-[10px] font-bold text-tertiary dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">+12.5% {t('last_month_compare')}</span>
+           
+           {/* Bonus Section Link */}
+           <button 
+               onClick={() => router.push('/wallet/cashback')}
+               className="w-full mt-6 bg-gradient-to-r from-emerald-50 to-indigo-50 dark:from-emerald-900/20 dark:to-indigo-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-[2.5rem] flex items-center justify-between group active:scale-[0.98] transition-all"
+           >
+               <div className="flex items-center gap-4 text-left">
+                   <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl shadow-sm flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                       <span className="material-symbols-outlined text-3xl">token</span>
+                   </div>
+                   <div className="flex flex-col">
+                       <span className="text-[10px] font-black text-on-surface-variant/50 dark:text-slate-500 uppercase tracking-[0.2em]">{t('bonuses')}</span>
+                       <span className="text-xl font-black text-indigo-900 dark:text-white tracking-tight">1,250 Pts</span>
+                   </div>
+               </div>
+               <div className="flex items-center gap-2">
+                   <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/20 px-3 py-1 rounded-full uppercase tracking-tighter">{t('silver_level')}</span>
+                   <span className="material-symbols-outlined text-outline-variant dark:text-slate-600 group-hover:translate-x-1 transition-transform">chevron_right</span>
+               </div>
+           </button>
         </section>
 
         {/* Cards Carousel (Simplified) */}
