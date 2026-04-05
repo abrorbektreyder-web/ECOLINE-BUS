@@ -232,8 +232,9 @@ function SearchResultsContent() {
           <span className="text-[9px] font-bold uppercase tracking-widest">Bosh</span>
         </button>
 
-        <div className="w-14 h-14 bg-indigo-600 rounded-2xl -mt-8 flex items-center justify-center shadow-xl shadow-indigo-700/40">
-          <span className="material-symbols-outlined text-white text-xl">search</span>
+        <div className="flex flex-col items-center gap-1 text-indigo-400 transition-colors">
+          <span className="material-symbols-outlined text-xl">search</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest">Qidirish</span>
         </div>
 
         <button
