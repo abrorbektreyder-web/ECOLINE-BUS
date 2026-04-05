@@ -15,6 +15,15 @@ export default function Home() {
   const [from, setFrom] = React.useState('Toshkent');
   const [to, setTo] = React.useState('Buxoro');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [date, setDate] = React.useState(new Date().toISOString().split('T')[0]);
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const months = language === 'uz' 
+      ? ['yan', 'feb', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek']
+      : (language === 'ru' ? ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+    return `${d.getDate()}-${months[d.getMonth()]}, ${d.getFullYear()}`;
+  };
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -39,7 +48,7 @@ export default function Home() {
       if (error) throw error;
 
       // Navigate to results page
-      router.push(`/search?from=${from}&to=${to}&date=24-okt, 2023`);
+      router.push(`/search?from=${from}&to=${to}&date=${date}`);
     } catch (error) {
       console.error('Search error:', error);
       alert('Tizimda xatolik yuz berdi');
@@ -162,10 +171,16 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date_label')}</label>
-                  <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
+                  <label className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest cursor-pointer">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">calendar_today</span>
-                    <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="24-okt, 2023" />
-                  </div>
+                    <span className="font-semibold text-on-surface dark:text-slate-100 text-sm">{formatDate(date)}</span>
+                    <input 
+                      type="date" 
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </label>
                 </div>
                 <div className="relative">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('passengers_label')}</label>
