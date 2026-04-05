@@ -20,10 +20,9 @@ export default function Home() {
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    const months = language === 'uz' 
-      ? ['yan', 'feb', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek']
-      : (language === 'ru' ? ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
-    return `${d.getDate()}-${months[d.getMonth()]}, ${d.getFullYear()}`;
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${day}.${month}.${d.getFullYear()}`;
   };
 
   const handleSearch = async () => {
@@ -208,8 +207,8 @@ export default function Home() {
                         }
                     }}
                   >
-                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">calendar_today</span>
-                    <span className="font-semibold text-on-surface dark:text-slate-100 text-sm">{formatDate(date)}</span>
+                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-2 md:mr-3 shrink-0">calendar_today</span>
+                    <span className="font-semibold text-on-surface dark:text-slate-100 text-sm truncate flex-1">{formatDate(date)}</span>
                     <input 
                       ref={dateInputRef}
                       type="date" 
@@ -222,8 +221,8 @@ export default function Home() {
                 <div className="relative">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('passengers_label')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
-                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">group</span>
-                    <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="1 Kattalar" />
+                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-2 md:mr-3 shrink-0">group</span>
+                    <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm truncate flex-1" type="text" defaultValue="1 Kattalar" />
                   </div>
                 </div>
               </div>
