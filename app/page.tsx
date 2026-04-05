@@ -149,46 +149,48 @@ export default function Home() {
         {/* Central Search Widget - Original Design Restoration */}
         <section className="relative mb-12">
           <div className="glass-card dark:bg-slate-800/40 rounded-3xl p-6 shadow-[0_24px_64px_rgba(25,28,29,0.06)] border border-white/50 dark:border-slate-700/50">
-            <div className="space-y-4 relative">
-              {/* From Field */}
-              <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from_label')}</label>
-                <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
-                  <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">location_on</span>
-                  <input 
-                    id="origin-input" 
-                    className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
-                    placeholder={t('from')} 
-                    type="text" 
-                    value={from}
-                    onChange={(e) => setFrom(e.target.value)}
-                  />
+            <div className="space-y-4">
+              <div className="space-y-4 relative">
+                {/* From Field */}
+                <div className="relative">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from_label')}</label>
+                  <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
+                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">location_on</span>
+                    <input 
+                      id="origin-input" 
+                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
+                      placeholder={t('from')} 
+                      type="text" 
+                      value={from}
+                      onChange={(e) => setFrom(e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              
-              {/* Swap Button */}
-              <div className="absolute right-8 top-[50%] -translate-y-[50%] z-20">
-                <button 
-                  onClick={handleSwap}
-                  className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 text-white flex items-center justify-center shadow-lg active:scale-90 hover:scale-105 transition-all duration-300 z-30 relative"
-                >
-                  <span className="material-symbols-outlined text-lg">swap_vert</span>
-                </button>
-              </div>
+                
+                {/* Swap Button */}
+                <div className="absolute right-8 top-[50%] -translate-y-[50%] z-20">
+                  <button 
+                    onClick={handleSwap}
+                    className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 text-white flex items-center justify-center shadow-lg active:scale-90 hover:scale-105 transition-all duration-300 z-30 relative"
+                  >
+                    <span className="material-symbols-outlined text-lg">swap_vert</span>
+                  </button>
+                </div>
 
-              {/* To Field */}
-              <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to_label')}</label>
-                <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
-                  <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">map</span>
-                  <input 
-                    id="destination-input" 
-                    className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
-                    placeholder={t('to')} 
-                    type="text" 
-                    value={to}
-                    onChange={(e) => setTo(e.target.value)}
-                  />
+                {/* To Field */}
+                <div className="relative">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to_label')}</label>
+                  <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
+                    <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">map</span>
+                    <input 
+                      id="destination-input" 
+                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
+                      placeholder={t('to')} 
+                      type="text" 
+                      value={to}
+                      onChange={(e) => setTo(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
