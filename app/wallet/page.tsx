@@ -52,7 +52,7 @@ export default function WalletPage() {
           <button onClick={() => router.push('/')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-slate-800 transition-colors">
             <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100 font-bold">arrow_back</span>
           </button>
-          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">Mening Hamyonim</h1>
+          <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg">{t('my_wallet')}</h1>
         </div>
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">
             <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
@@ -62,14 +62,14 @@ export default function WalletPage() {
       <main className="px-6 pt-6 max-w-2xl mx-auto space-y-8">
         {/* Total Balance */}
         <section className="text-center py-6">
-           <span className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] mb-2 block text-center">JAMI BALANSIM</span>
+           <span className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] mb-2 block text-center">{t('total_balance')}</span>
            <h2 className="text-5xl font-black text-indigo-900 dark:text-white tracking-tighter tabular-nums mb-1">{balance}</h2>
-           <span className="text-[10px] font-bold text-tertiary dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">+12.5% o'tgan oydan</span>
+           <span className="text-[10px] font-bold text-tertiary dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">+12.5% {t('last_month_compare')}</span>
         </section>
 
         {/* Cards Carousel (Simplified) */}
         <section className="space-y-4">
-           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">MENING KARTALARIM</h3>
+           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">{t('my_cards')}</h3>
            <div className="flex gap-4 overflow-x-auto pb-4 px-2 snap-x hide-scrollbar">
               {cards.map((card, i) => (
                 <div key={i} className={`min-w-[280px] h-[180px] ${card.color} rounded-[2.5rem] p-6 shadow-xl snap-center relative overflow-hidden flex flex-col justify-between group cursor-pointer active:scale-95 transition-all`}>
@@ -79,7 +79,7 @@ export default function WalletPage() {
                       <span className="text-white font-black text-lg italic">{card.type}</span>
                    </div>
                    <div className="flex flex-col gap-1">
-                      <span className="text-white/40 font-bold uppercase text-[10px] tracking-widest">Balans</span>
+                      <span className="text-white/40 font-bold uppercase text-[10px] tracking-widest">{t('balance')}</span>
                       <span className="text-white text-2xl font-black tracking-tight">{card.balance}</span>
                       <span className="text-white/60 font-medium text-sm mt-2">**** **** **** {card.last4}</span>
                    </div>
@@ -90,14 +90,14 @@ export default function WalletPage() {
                 className="min-w-[140px] h-[180px] rounded-[2.5rem] border-2 border-dashed border-outline-variant dark:border-slate-700 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low dark:hover:bg-slate-800 transition-colors"
               >
                  <span className="material-symbols-outlined text-outline-variant dark:text-slate-600 text-3xl">add</span>
-                 <span className="text-[10px] font-black text-outline-variant/80 dark:text-slate-500 uppercase tracking-widest text-center">KARTA QO'SHISH</span>
+                 <span className="text-[10px] font-black text-outline-variant/80 dark:text-slate-500 uppercase tracking-widest text-center">{t('add_card')}</span>
               </button>
            </div>
         </section>
 
         {/* Transactions list */}
         <section className="space-y-4">
-          <h2 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">OXIRGI AMALLAR</h2>
+          <h2 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">{t('recent_transactions')}</h2>
           <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-outline-variant/20 dark:border-slate-700/50 overflow-hidden shadow-sm">
              {transactions.map((t, idx) => (
                 <div key={idx} className={`p-5 flex items-center justify-between group active:bg-surface-container-high dark:active:bg-slate-700 transition-colors ${idx !== transactions.length - 1 ? 'border-b border-outline-variant/10 dark:border-slate-700/50' : ''}`}>
@@ -128,7 +128,7 @@ export default function WalletPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm transition-all">
           <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[3rem] p-8 shadow-2xl border border-outline-variant/20 dark:border-white/5 animate-in fade-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-black text-indigo-900 dark:text-white uppercase tracking-tight">Karta Qiritish</h3>
+              <h3 className="text-xl font-black text-indigo-900 dark:text-white uppercase tracking-tight">{t('enter_card')}</h3>
               <button 
                 onClick={() => setIsModalOpen(false)}
                 className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
@@ -139,7 +139,7 @@ export default function WalletPage() {
             
             <form onSubmit={handleAddCard} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">KARTA TURI</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">{t('card_type')}</label>
                 <select 
                   value={newCardData.type}
                   onChange={(e) => setNewCardData({...newCardData, type: e.target.value})}
@@ -153,7 +153,7 @@ export default function WalletPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">KARTA RAQAMI (OXIRGI 4 TA)</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">{t('card_number_last4')}</label>
                 <input 
                   type="text"
                   maxLength={4}
@@ -169,7 +169,7 @@ export default function WalletPage() {
                 type="submit"
                 className="w-full py-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-indigo-600/20 transition-all active:scale-[0.98]"
               >
-                TASDIQLASH
+                {t('confirm')}
               </button>
             </form>
           </div>

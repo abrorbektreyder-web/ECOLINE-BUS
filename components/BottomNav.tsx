@@ -3,15 +3,18 @@
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
+import { useLanguage } from './LanguageProvider';
+ 
 export default function BottomNav() {
+  const { t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
 
   const navItems = [
-    { label: 'Qidirish', icon: 'search', path: '/' },
-    { label: 'Safarlar', icon: 'directions_bus', path: '/trips' },
-    { label: 'Hamyon', icon: 'account_balance_wallet', path: '/wallet' },
-    { label: 'Profil', icon: 'person', path: '/profile' },
+    { label: t('search'), icon: 'search', path: '/' },
+    { label: t('my_trips'), icon: 'directions_bus', path: '/trips' },
+    { label: t('wallet'), icon: 'account_balance_wallet', path: '/wallet' },
+    { label: t('profile'), icon: 'person', path: '/profile' },
   ];
 
   return (

@@ -53,7 +53,7 @@ export default function Home() {
             </button>
             <div className="flex flex-col">
               <h1 className="text-2xl font-black text-indigo-900 dark:text-indigo-50 tracking-tighter leading-tight">BusGo</h1>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">Premium Sayohat</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">Premium {t('support')}</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -74,8 +74,8 @@ export default function Home() {
       <main className="px-6 pt-8 max-w-2xl mx-auto">
         {/* Hero Greeting */}
         <section className="mb-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-on-primary-fixed dark:text-indigo-200 mb-1">{language === 'ru' ? 'Привет, Турист!' : language === 'en' ? 'Hello, Traveler!' : 'Salom, Sayyoh!'}</h2>
-          <p className="text-on-surface-variant dark:text-slate-400 font-medium">{language === 'ru' ? 'Куда хотите отправиться сегодня?' : language === 'en' ? 'Where would you like to travel today?' : 'Bugun qayerga sayohat qilishni xohlaysiz?'}</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-on-primary-fixed dark:text-indigo-200 mb-1">{t('hello_traveler')}</h2>
+          <p className="text-on-surface-variant dark:text-slate-400 font-medium">{t('where_to')}</p>
         </section>
 
         {/* Central Search Widget - Original Design Restoration */}
@@ -84,7 +84,7 @@ export default function Home() {
             <div className="space-y-4 relative">
               {/* From Field */}
               <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from')}</label>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from_label')}</label>
                 <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                   <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">location_on</span>
                   <input 
@@ -110,7 +110,7 @@ export default function Home() {
 
               {/* To Field */}
               <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to')}</label>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to_label')}</label>
                 <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                   <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">map</span>
                   <input 
@@ -127,14 +127,14 @@ export default function Home() {
               {/* Date & Travelers Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date')}</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date_label')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">calendar_today</span>
                     <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="24-okt, 2023" />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('passengers')}</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('passengers_label')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">group</span>
                     <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="1 Kattalar" />
@@ -159,8 +159,8 @@ export default function Home() {
         {/* Popular Destinations */}
         <section className="mb-12">
           <div className="flex items-end justify-between mb-6">
-            <h3 className="text-xl font-bold tracking-tight text-indigo-900 dark:text-indigo-200">Mashhur xalqaro yo'nalishlar</h3>
-            <button className="text-xs font-bold text-primary tracking-widest uppercase hover:underline">BARCHASINI KO'RISH</button>
+            <h3 className="text-xl font-bold tracking-tight text-indigo-900 dark:text-indigo-200">{t('popular_intl_destinations')}</h3>
+            <button className="text-xs font-bold text-primary tracking-widest uppercase hover:underline">{t('view_all')}</button>
           </div>
           <div className="flex overflow-x-auto pb-8 -mx-6 px-6 gap-6 no-scrollbar snap-x snap-mandatory">
             {destinations.map((dest, i) => (
@@ -180,7 +180,7 @@ export default function Home() {
                     <span className="material-symbols-outlined text-sm text-tertiary-fixed-dim fill-icon">star</span>
                     <span className="text-xs font-bold text-on-surface dark:text-slate-100">{dest.rating}</span>
                   </div>
-                  <p className="text-sm font-medium text-on-surface-variant dark:text-slate-400">Narxi <span className="text-indigo-700 dark:text-indigo-300 font-extrabold text-base">${dest.price}</span></p>
+                  <p className="text-sm font-medium text-on-surface-variant dark:text-slate-400">{t('price_label')} <span className="text-indigo-700 dark:text-indigo-300 font-extrabold text-base">${dest.price}</span></p>
                 </div>
               </div>
             ))}
@@ -190,9 +190,9 @@ export default function Home() {
         {/* Quick Actions / Promo */}
         <section className="bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden border border-indigo-100 dark:border-indigo-800/30">
           <div className="relative z-10">
-            <h4 className="text-indigo-900 dark:text-indigo-100 font-bold text-lg leading-tight mb-1">Birinchi sayohatmi?</h4>
-            <p className="text-indigo-700/70 dark:text-indigo-300/70 text-sm font-medium mb-3">Birinchi bandlov uchun 20% chegirma oling.</p>
-            <button className="px-4 py-2 bg-indigo-900 dark:bg-indigo-500 text-white rounded-full text-xs font-bold uppercase tracking-wider active:scale-95 transition-transform">HOZIROQ OLISH</button>
+            <h4 className="text-indigo-900 dark:text-indigo-100 font-bold text-lg leading-tight mb-1">{t('first_trip_promo')}</h4>
+            <p className="text-indigo-700/70 dark:text-indigo-300/70 text-sm font-medium mb-3">{t('first_trip_desc')}</p>
+            <button className="px-4 py-2 bg-indigo-900 dark:bg-indigo-500 text-white rounded-full text-xs font-bold uppercase tracking-wider active:scale-95 transition-transform">{t('get_it_now')}</button>
           </div>
           <span className="material-symbols-outlined text-8xl absolute -right-4 -bottom-4 text-indigo-200/50 dark:text-indigo-500/20 rotate-12">confirmation_number</span>
         </section>
