@@ -63,28 +63,50 @@ export default function Home() {
     setTo(from);
   };
 
-  // Destination Card data from legacy/01_Home_Search.html
+  // Destination Card data - with real images and navigation
   const destinations = [
     {
       title: "Tashkent to Guangzhou",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBLGUIIJUvxQd7pmjJr4f8YpsLcAsUhoHtc5QlUNYJjSDWTAF1D6szXtZV77to_ur0PnakHjpV9Bwcphuw0Dm7whD4c7ir0xQGI4bc1w3M5j5u82e8OrLPQ5WSbDZxAIhWHt9ipthET_dThSdvRQ3DRvdCaQ82ysJKYrwBTcIPG7JxTX7a2UcbsYcWTYBAg-v573MMoVVzXMQOcRpPcP3xi-72nSAoA7PCRpnQVxTnGB92LvizVhGWCGQhyxWHOYHXZkYnwuE6Wwqi5",
+      from: "Toshkent",
+      to: "Guangzhou",
+      // Real Guangzhou Canton Tower skyline photo from Unsplash
+      image: "https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=800&q=80",
       rating: "4.9",
       price: "89",
       badge: "Tezkor taklif"
     },
     {
       title: "Paris to London",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuArX8P6hv3LE5GjZPpGm9XdFO28POttK2TT7hpNoOjvwEke5HqL1NJ3uQPlPMGT32kzH6acfS1LGeTYiXhUCams9KVh5b2cQJwECfg95G7k9dpOqFtkKltNVB9WMnzAdHtbnVNyBGWSV9le9RrIzT_QY2gH39xtXskM-OFMg4Q7IU-bwzYn4dA6IZf1Ees3f1YjVTfXYT4wH-Goon6ta63aGykfTYZAzIfhE0YgpKE6Y6XIpAuxX44qDDE8IV0Ll0oG1GGb89qcckj6",
+      from: "Paris",
+      to: "London",
+      image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
       rating: "4.8",
       price: "45"
     },
     {
       title: "Berlin to Paris",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAO8qXknwnqTwgnAmNjM8R6pVDhCpfjxIyt1f2471XP_foYV-JWycgdRLUNW5se_Eh414qknOsJfSXELerxRwkBevGv_owNKAevzzHvR1FFJpJbewzJ1fhgr8ER14CmEVj12HjseCl_-k1Tp0WBPnornGQEGaomeVKvUEE3Dac9ORrIew0fZnfvUPYOIySvrwpGkSrxvSXMTnotmnLfZzsOxFzHc9k4lt5plmKICUrev976pZ_DxKXL83WTQmShX5X3fEtvfvfYjrSc",
+      from: "Berlin",
+      to: "Paris",
+      image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80",
       rating: "4.7",
       price: "62"
     }
   ];
+
+  // Handle destination card click — navigate to search with pre-filled fields
+  const handleDestinationClick = (dest: { from: string; to: string; price: string }) => {
+    const today = new Date().toISOString().split('T')[0];
+    router.push(`/search?from=${encodeURIComponent(dest.from)}&to=${encodeURIComponent(dest.to)}&date=${today}`);
+  };
+
+  // Handle first-trip promo button — store promo in localStorage, navigate to search
+  const handleFirstTripPromo = () => {
+    try {
+      localStorage.setItem('busgo_promo', JSON.stringify({ code: 'FIRST20', discount: 20, expires: Date.now() + 3600000 }));
+    } catch (e) { /* localStorage may be blocked */ }
+    const today = new Date().toISOString().split('T')[0];
+    router.push(`/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${today}&promo=FIRST20`);
+  };
 
   return (
     <div className="min-h-screen bg-surface text-on-surface dark:bg-slate-900 dark:text-slate-100 pb-32 transition-colors duration-300">
@@ -229,15 +251,29 @@ export default function Home() {
           </div>
           <div className="flex overflow-x-auto pb-8 -mx-6 px-6 gap-6 no-scrollbar snap-x snap-mandatory">
             {destinations.map((dest, i) => (
-              <div key={i} className="min-w-[75%] sm:min-w-[320px] snap-center group cursor-pointer active:scale-[0.98] transition-all">
+              <div
+                key={i}
+                onClick={() => handleDestinationClick(dest)}
+                className="min-w-[75%] sm:min-w-[320px] snap-center group cursor-pointer active:scale-[0.98] transition-all"
+              >
                 <div className="relative h-72 rounded-[2.5rem] overflow-hidden shadow-sm border border-outline-variant/10 dark:border-white/5 mb-4 group-hover:shadow-xl transition-shadow">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
-                  <img src={dest.image} alt={dest.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <img
+                    src={dest.image}
+                    alt={dest.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    onError={(e) => { e.currentTarget.src = `https://picsum.photos/seed/${i+1}/800/600`; }}
+                  />
                   <div className="absolute bottom-6 left-6 z-20">
                     {dest.badge && (
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 mb-1 block">{dest.badge}</span>
                     )}
                     <h4 className="text-xl font-bold text-white tracking-tight">{dest.title}</h4>
+                  </div>
+                  {/* Tap hint overlay */}
+                  <div className="absolute top-4 right-4 z-20 bg-white/20 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="material-symbols-outlined text-white text-sm">search</span>
+                    <span className="text-white text-[10px] font-bold uppercase tracking-wider">Izlash</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between px-2">
@@ -257,7 +293,12 @@ export default function Home() {
           <div className="relative z-10">
             <h4 className="text-indigo-900 dark:text-indigo-100 font-bold text-lg leading-tight mb-1">{t('first_trip_promo')}</h4>
             <p className="text-indigo-700/70 dark:text-indigo-300/70 text-sm font-medium mb-3">{t('first_trip_desc')}</p>
-            <button className="px-4 py-2 bg-indigo-900 dark:bg-indigo-500 text-white rounded-full text-xs font-bold uppercase tracking-wider active:scale-95 transition-transform">{t('get_it_now')}</button>
+            <button
+              onClick={handleFirstTripPromo}
+              className="px-4 py-2 bg-indigo-900 dark:bg-indigo-500 text-white rounded-full text-xs font-bold uppercase tracking-wider active:scale-95 transition-transform hover:bg-indigo-700 dark:hover:bg-indigo-400"
+            >
+              {t('get_it_now')}
+            </button>
           </div>
           <span className="material-symbols-outlined text-8xl absolute -right-4 -bottom-4 text-indigo-200/50 dark:text-indigo-500/20 rotate-12">confirmation_number</span>
         </section>
