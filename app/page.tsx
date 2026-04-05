@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { useLanguage } from '@/components/LanguageProvider';
 import BottomNav from '@/components/BottomNav';
+import { supabase } from '@/lib/supabase';
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
@@ -13,6 +14,39 @@ export default function Home() {
 
   const [from, setFrom] = React.useState('Toshkent');
   const [to, setTo] = React.useState('Buxoro');
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleSearch = async () => {
+    setIsLoading(true);
+    try {
+      // 1. Get City IDs
+      const { data: originCity } = await supabase.from('cities').select('id').ilike('name', from).single();
+      const { data: destCity } = await supabase.from('cities').select('id').ilike('name', to).single();
+
+      if (!originCity || !destCity) {
+        alert(t('cities_not_found') || 'Shaharlar topilmadi');
+        return;
+      }
+
+      // 2. Fetch Trips (for validation or pre-check)
+      const { data: trips, error } = await supabase
+        .from('trips')
+        .select(`id`)
+        .eq('origin_id', originCity.id)
+        .eq('destination_id', destCity.id)
+        .eq('status', 'active');
+
+      if (error) throw error;
+
+      // Navigate to results page
+      router.push(`/search?from=${from}&to=${to}&date=24-okt, 2023`);
+    } catch (error) {
+      console.error('Search error:', error);
+      alert('Tizimda xatolik yuz berdi');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSwap = () => {
     setFrom(to);
@@ -144,13 +178,18 @@ export default function Home() {
 
               {/* Search Button */}
               <button 
-                onClick={() => {
-                  router.push(`/search?from=${from}&to=${to}&date=24-okt, 2023`);
-                }}
-                className="w-full py-5 rounded-3xl bg-gradient-to-br from-primary to-primary-container text-white font-black uppercase tracking-widest text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
+                onClick={handleSearch}
+                disabled={isLoading}
+                className="w-full py-5 rounded-3xl bg-gradient-to-br from-primary to-primary-container text-white font-black uppercase tracking-widest text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70"
               >
-                <span>{t('find_trips')}</span>
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <span>{t('find_trips')}</span>
+                    <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

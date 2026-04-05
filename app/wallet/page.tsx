@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import BottomNav from '@/components/BottomNav';
 import { useLanguage } from '@/components/LanguageProvider';
+import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react';
 
 export default function WalletPage() {
   const { theme, toggleTheme } = useTheme();
@@ -18,8 +20,26 @@ export default function WalletPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newCardData, setNewCardData] = useState({ type: 'Visa', last4: '' });
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [totalBalance, setTotalBalance] = useState(0);
 
-  const balance = "$1,248.50";
+  useEffect(() => {
+    async function fetchWalletData() {
+      const { data, error } = await supabase
+        .from('wallet_transactions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        setTransactions(data);
+        const bal = data.reduce((acc, curr) => {
+          return curr.type === 'deposit' ? acc + Number(curr.amount) : acc - Number(curr.amount);
+        }, 0);
+        setTotalBalance(bal);
+      }
+    }
+    fetchWalletData();
+  }, []);
   
   const handleAddCard = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +58,6 @@ export default function WalletPage() {
     setNewCardData({ type: 'Visa', last4: '' });
   };
 
-  const transactions = [
-    { label: 'Tashkent - Guangzhou Ticket', date: 'Bugun, 14:20', amount: '-$89.00', status: 'Debet' },
-    { label: 'Hamyon to\'ldirish (Stripe)', date: 'Kecha, 09:12', amount: '+$500.00', status: 'Kredit' },
-    { label: 'Paris - London Ticket', date: '2 Mart, 11:30', amount: '-$45.00', status: 'Debet' },
-  ];
 
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 pb-32 transition-colors duration-300">
@@ -63,7 +78,7 @@ export default function WalletPage() {
         {/* Total Balance */}
         <section className="text-center py-6">
            <span className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] mb-2 block text-center">{t('total_balance')}</span>
-           <h2 className="text-5xl font-black text-indigo-900 dark:text-white tracking-tighter tabular-nums mb-1">{balance}</h2>
+           <h2 className="text-5xl font-black text-indigo-900 dark:text-white tracking-tighter tabular-nums mb-1">${totalBalance.toLocaleString()}</h2>
            <span className="text-[10px] font-bold text-tertiary dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">+12.5% {t('last_month_compare')}</span>
         </section>
 
@@ -98,26 +113,26 @@ export default function WalletPage() {
         {/* Transactions list */}
         <section className="space-y-4">
           <h2 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2">{t('recent_transactions')}</h2>
-          <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-outline-variant/20 dark:border-slate-700/50 overflow-hidden shadow-sm">
-             {transactions.map((t, idx) => (
-                <div key={idx} className={`p-5 flex items-center justify-between group active:bg-surface-container-high dark:active:bg-slate-700 transition-colors ${idx !== transactions.length - 1 ? 'border-b border-outline-variant/10 dark:border-slate-700/50' : ''}`}>
-                   <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-2xl ${t.amount.startsWith('+') ? 'bg-emerald-50 dark:bg-emerald-900/30' : 'bg-red-50 dark:bg-red-900/30'} flex items-center justify-center`}>
-                         <span className={`material-symbols-outlined ${t.amount.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-                           {t.amount.startsWith('+') ? 'south_west' : 'north_east'}
-                         </span>
-                      </div>
-                      <div className="flex flex-col">
-                         <span className="font-bold text-on-surface dark:text-slate-100 text-sm tracking-tight">{t.label}</span>
-                         <span className="text-[10px] font-medium text-on-surface-variant/60 dark:text-slate-500">{t.date} • {t.status}</span>
-                      </div>
-                   </div>
-                   <span className={`font-black text-sm tracking-tight ${t.amount.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-on-surface dark:text-slate-100'}`}>
-                     {t.amount}
-                   </span>
-                </div>
-             ))}
-          </div>
+           <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-outline-variant/20 dark:border-slate-700/50 overflow-hidden shadow-sm">
+              {transactions.map((tx, idx) => (
+                 <div key={idx} className={`p-5 flex items-center justify-between group active:bg-surface-container-high dark:active:bg-slate-700 transition-colors ${idx !== transactions.length - 1 ? 'border-b border-outline-variant/10 dark:border-slate-700/50' : ''}`}>
+                    <div className="flex items-center gap-4">
+                       <div className={`w-10 h-10 rounded-2xl ${tx.type === 'deposit' ? 'bg-emerald-50 dark:bg-emerald-900/30' : 'bg-red-50 dark:bg-red-900/30'} flex items-center justify-center`}>
+                          <span className={`material-symbols-outlined ${tx.type === 'deposit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                            {tx.type === 'deposit' ? 'south_west' : 'north_east'}
+                          </span>
+                       </div>
+                       <div className="flex flex-col">
+                          <span className="font-bold text-on-surface dark:text-slate-100 text-sm tracking-tight">{tx.description}</span>
+                          <span className="text-[10px] font-medium text-on-surface-variant/60 dark:text-slate-500">{new Date(tx.created_at).toLocaleDateString()} • {tx.type}</span>
+                       </div>
+                    </div>
+                    <span className={`font-black text-sm tracking-tight ${tx.type === 'deposit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-on-surface dark:text-slate-100'}`}>
+                      {tx.type === 'deposit' ? '+' : '-'}${tx.amount}
+                    </span>
+                 </div>
+              ))}
+           </div>
         </section>
       </main>
 
