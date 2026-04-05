@@ -77,18 +77,35 @@
             },
         }
     </script>
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
+    </script>
 <style>
     body {
       min-height: max(884px, 100dvh);
     }
   </style>
   </head>
-<body class="bg-surface text-on-surface font-body antialiased min-h-screen pb-24">
+<body class="bg-surface text-on-surface dark:bg-slate-900 dark:text-slate-100 font-body antialiased min-h-screen pb-24 transition-colors duration-300">
 <!-- Header / Nav (Following explicit exclusions, hiding bottom nav since this is a search result/booking flow, but keeping the top contextual header) -->
 <header class="sticky top-0 z-50 bg-surface/80 backdrop-blur-[24px] border-b border-outline-variant/20">
 <div class="flex items-center px-4 py-4 max-w-2xl mx-auto w-full">
-<button class="w-12 h-12 flex items-center justify-center text-on-surface rounded-full hover:bg-surface-container-high transition-colors">
+<button class="w-12 h-12 flex items-center justify-center text-on-surface dark:text-slate-400 rounded-full hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-indigo-900/30 transition-colors">
+    <span class="material-symbols-outlined dark:hidden text-indigo-900" data-icon="dark_mode">dark_mode</span>
+    <span class="material-symbols-outlined hidden dark:block text-yellow-400" data-icon="light_mode">light_mode</span>
 </button>
 <h1 class="text-[1.125rem] font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12 text-on-surface">Toshkent - Guanchjou</h1>
 </div>
@@ -107,7 +124,7 @@
 <!-- Journey Cards Container -->
 <div class="flex flex-col gap-6">
 <!-- Card 1: VIP -->
-<article class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 shadow-[0px_4px_12px_rgba(25,28,29,0.03),0px_12px_32px_rgba(25,28,29,0.05)] relative overflow-hidden">
+<article class="bg-surface-container-lowest dark:bg-slate-800 rounded-xl p-6 flex flex-col gap-6 shadow-[0px_4px_12px_rgba(25,28,29,0.03),0px_12px_32px_rgba(25,28,29,0.05)] relative overflow-hidden border dark:border-slate-700/50">
 <!-- Status Badge -->
 <div class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-bl-lg">
                     VIP EKSKLYUZIV
