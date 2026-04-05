@@ -41,7 +41,22 @@ function BookingDetail() {
       // Simulate Payment Processing
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      const tripId = searchParams.get('tripId') || 'eeac130b-7791-423b-987a-82f72068326f'; // Fallback for demo
+      let tripId = searchParams.get('tripId');
+      
+      // Fallback: If no tripId in URL, fetch a random trip from the database to prevent foreign key constraint violations
+      if (!tripId || tripId === 'eeac130b-7791-423b-987a-82f72068326f') {
+          const { data: randomTrip } = await supabase
+            .from('trips')
+            .select('id')
+            .limit(1)
+            .single();
+            
+          if (randomTrip) {
+            tripId = randomTrip.id;
+          } else {
+            throw new Error("Bazadan birorta ham reys topilmadi, iltimos oldin baza migratsiyasini bajaring.");
+          }
+      }
       
       const { data, error: dbError } = await supabase
         .from('bookings')

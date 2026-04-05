@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, Suspense, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, Text, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
@@ -78,8 +78,9 @@ function Seat({ data, selected, onClick }: any) {
   );
 }
 
-export default function WebGLSeatsPage() {
+function WebGLSeatsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   
   const handleSeatClick = (name: string) => {
@@ -144,7 +145,7 @@ export default function WebGLSeatsPage() {
 
       {/* Bottom Action Bar */}
       <div className="absolute bottom-0 left-0 w-full p-6 z-10 pointer-events-none">
-         <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex items-center justify-between pointer-events-auto shadow-2xl max-w-2xl mx-auto">
+          <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 flex items-center justify-between pointer-events-auto shadow-2xl max-w-2xl mx-auto">
             <div>
               <p className="text-[10px] text-white/50 font-black tracking-widest uppercase mb-1">Tanlangan</p>
               <h2 className="text-2xl font-black text-white">
@@ -154,14 +155,30 @@ export default function WebGLSeatsPage() {
             
             <button 
               disabled={selectedSeats.length === 0}
-              onClick={() => router.push('/booking')}
+              onClick={() => {
+                const query = new URLSearchParams(searchParams.toString());
+                query.set('seats', selectedSeats.join(','));
+                router.push(`/booking?${query.toString()}`);
+              }}
               className={`px-8 py-4 rounded-2xl font-black tracking-widest transition-all ${selectedSeats.length > 0 ? 'bg-indigo-600 text-white hover:scale-105 shadow-[0_0_20px_rgba(79,70,229,0.4)]' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}`}
             >
               DAVOM ETISH
             </button>
-         </div>
+          </div>
       </div>
       
     </div>
+  );
+}
+
+export default function WebGLSeatsRoute() {
+  return (
+    <Suspense fallback={
+       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+         <p className="text-slate-500 font-bold uppercase tracking-widest text-xs animate-pulse">Yuklanmoqda 3D...</p>
+       </div>
+    }>
+      <WebGLSeatsPage />
+    </Suspense>
   );
 }
