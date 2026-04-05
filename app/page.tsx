@@ -11,6 +11,7 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const { t, language } = useLanguage();
   const router = useRouter();
+  const dateInputRef = React.useRef<HTMLInputElement>(null);
 
   const [from, setFrom] = React.useState('Toshkent');
   const [to, setTo] = React.useState('Buxoro');
@@ -171,12 +172,22 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date_label')}</label>
-                  <label className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest cursor-pointer">
+                  <label 
+                    className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-indigo-50 dark:focus-within:bg-indigo-900/10 cursor-pointer border border-transparent focus-within:border-indigo-200 dark:focus-within:border-indigo-800"
+                    onClick={() => {
+                        try {
+                            dateInputRef.current?.showPicker();
+                        } catch (e) {
+                            dateInputRef.current?.focus();
+                        }
+                    }}
+                  >
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">calendar_today</span>
                     <span className="font-semibold text-on-surface dark:text-slate-100 text-sm">{formatDate(date)}</span>
                     <input 
+                      ref={dateInputRef}
                       type="date" 
-                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      className="absolute inset-0 opacity-0 pointer-events-none" 
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                     />
