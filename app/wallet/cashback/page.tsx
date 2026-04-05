@@ -129,34 +129,34 @@ export default function CashbackPage() {
       <main className="px-4 pt-6 max-w-2xl mx-auto space-y-4">
 
         {/* === HERO POINTS CARD === */}
-        <section ref={heroCardRef} className={`bg-gradient-to-br ${currentTier.color} rounded-[3rem] p-8 text-white shadow-2xl relative overflow-hidden`}>
+        <section ref={heroCardRef} className={`bg-gradient-to-br ${currentTier.color} rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden`}>
           {/* Decorative blobs */}
           <div className="absolute -right-16 -top-16 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute -left-16 -bottom-16 w-48 h-48 bg-black/10 rounded-full blur-3xl" />
 
           <div className="relative z-10 space-y-5">
             {/* Tier badge */}
-            <div className="flex justify-between items-start">
-              <div>
+            <div className="flex justify-between items-start gap-2">
+              <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70">{t('bonus_points')}</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span ref={pointCounterRef} className="text-7xl font-black tabular-nums tracking-tighter">0</span>
-                  <span className="text-lg font-bold text-white/60 uppercase tracking-widest pb-1">Pts</span>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mt-1">
+                  <span ref={pointCounterRef} className="text-5xl sm:text-7xl font-black tabular-nums tracking-tighter break-all">0</span>
+                  <span className="text-sm sm:text-lg font-bold text-white/60 uppercase tracking-widest pb-1 shrink-0">Pts</span>
                 </div>
               </div>
-              <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/30 flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg">{currentTier.icon}</span>
-                <span className="text-[11px] font-black uppercase tracking-widest">{currentTier.label}</span>
+              <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl border border-white/30 flex items-center gap-1 sm:gap-2 shrink-0 mt-1 sm:mt-0">
+                <span className="material-symbols-outlined text-base sm:text-lg">{currentTier.icon}</span>
+                <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest">{currentTier.label}</span>
               </div>
             </div>
 
             {/* Cashback value */}
-            <div className="bg-black/20 rounded-2xl p-4 flex items-center justify-between">
-              <div>
+            <div className="bg-black/20 rounded-2xl p-4 flex items-center justify-between gap-4">
+              <div className="min-w-0">
                 <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">{t('cashback_balance')}</p>
-                <p className="text-2xl font-black tabular-nums mt-0.5">{(TOTAL_POINTS * 10).toLocaleString()} so'm</p>
+                <p className="text-xl sm:text-2xl font-black tabular-nums mt-0.5 break-words">{(TOTAL_POINTS * 10).toLocaleString()} so'm</p>
               </div>
-              <button className="bg-white text-indigo-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+              <button className="bg-white text-indigo-700 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all shrink-0">
                 Sarflash
               </button>
             </div>
