@@ -118,7 +118,7 @@ export default function CashbackPage() {
           </button>
           <div>
             <h1 className="font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tight text-lg leading-tight">{t('my_bonuses')}</h1>
-            <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{currentTier.label} Member</p>
+            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mt-0.5 leading-none">{currentTier.label} Member</p>
           </div>
         </div>
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">

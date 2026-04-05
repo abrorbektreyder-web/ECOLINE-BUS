@@ -24,6 +24,7 @@ function BookingDetail() {
     phone: ''
   });
 
+  const [hasInsurance, setHasInsurance] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +50,7 @@ function BookingDetail() {
           seat_numbers: [parseInt(seats) || 12],
           passenger_names: [formData.fullName],
           passport_numbers: [formData.passport],
-          total_price: parseFloat(price),
+          total_price: parseFloat(price) + (hasInsurance ? 12 : 0),
           status: 'paid',
           user_email: formData.email,
           qr_code: uuidv4()
@@ -59,7 +60,8 @@ function BookingDetail() {
 
       if (dbError) throw dbError;
 
-      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${price}&name=${formData.fullName}&orderId=${data.id}`);
+      const finalPrice = parseFloat(price) + (hasInsurance ? 12 : 0);
+      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data.id}`);
     } catch (err: any) {
       setError('To\'lovda xatolik yuz berdi: ' + err.message);
       setIsProcessing(false);
@@ -232,7 +234,19 @@ function BookingDetail() {
               <h3 className="text-2xl font-black tracking-tight">Sayohat sug&apos;urtasi</h3>
               <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo&apos;g&apos;i $12 evaziga sug&apos;urtalang.</p>
             </div>
-            <button className="bg-tertiary-fixed-dim dark:bg-indigo-400 text-tertiary-container dark:text-indigo-900 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">HIMOYA QO&apos;SHISH</button>
+            <button 
+              onClick={() => setHasInsurance(!hasInsurance)}
+              className={`${hasInsurance ? 'bg-emerald-500 text-white' : 'bg-tertiary-fixed-dim dark:bg-indigo-400 text-tertiary-container dark:text-indigo-900'} px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all flex items-center gap-2`}
+            >
+              {hasInsurance ? (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  QO'SHILDI
+                </>
+              ) : (
+                "HIMOYA QO'SHISH"
+              )}
+            </button>
           </div>
         </section>
       </main>
@@ -241,7 +255,7 @@ function BookingDetail() {
       <nav className="fixed bottom-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-3xl shadow-[0px_-4px_12px_rgba(25,28,29,0.03)] flex justify-around items-center px-8 py-4">
         <div className="flex flex-col items-start">
           <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500">UMUMIY NARX</span>
-          <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100 tracking-tighter">${price}</span>
+          <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100 tracking-tighter">${parseFloat(price) + (hasInsurance ? 12 : 0)}</span>
         </div>
         <div className="flex gap-4">
           <button className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 py-2 hover:opacity-90 transition-opacity">
