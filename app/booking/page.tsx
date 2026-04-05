@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function BookingDetail() {
+function BookingDetail() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -229,10 +229,10 @@ export default function BookingDetail() {
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div className="space-y-2">
-              <h3 className="text-2xl font-black tracking-tight">Sayohat sug'urtasi</h3>
-              <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo'g'i $12 evaziga sug'urtalang.</p>
+              <h3 className="text-2xl font-black tracking-tight">Sayohat sug&apos;urtasi</h3>
+              <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo&apos;g&apos;i $12 evaziga sug&apos;urtalang.</p>
             </div>
-            <button className="bg-tertiary-fixed-dim dark:bg-indigo-400 text-tertiary-container dark:text-indigo-900 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">HIMOYA QO'SHISH</button>
+            <button className="bg-tertiary-fixed-dim dark:bg-indigo-400 text-tertiary-container dark:text-indigo-900 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">HIMOYA QO&apos;SHISH</button>
           </div>
         </section>
       </main>
@@ -256,17 +256,25 @@ export default function BookingDetail() {
             {isProcessing ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black">TO'LOV KETMOQDA...</span>
+                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black">TO&apos;LOV KETMOQDA...</span>
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined fill-icon text-sm">account_balance_wallet</span>
-                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black underline-offset-4">HOZIROQ TO'LASH</span>
+                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black underline-offset-4">HOZIROQ TO&apos;LASH</span>
               </>
             )}
           </button>
         </div>
       </nav>
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">Yuklanmoqda...</div>}>
+      <BookingDetail />
+    </Suspense>
   );
 }
