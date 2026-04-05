@@ -32,7 +32,7 @@
   --color-surface-dim: var(--surface-dim);
   --color-surface-container-low: var(--surface-container-low);
   --color-secondary-fixed-dim: var(--secondary-fixed-dim);
-  --color-on-error-container: var(--on-error-container);
+  --on-error-container: #8b0000;
   --color-error: var(--error);
   --color-surface-tint: var(--surface-tint);
   --color-surface-container: var(--surface-container);
@@ -50,6 +50,8 @@
   --color-on-secondary: var(--on-secondary);
   --color-outline-variant: var(--outline-variant);
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --on-tertiary-container: #00ad78;
@@ -136,6 +138,16 @@
   .dark .glass-card {
     background: rgba(30, 41, 59, 0.4);
     border-color: rgba(51, 65, 85, 0.5);
+  }
+
+  .seat-selected {
+    background: linear-gradient(135deg, #000666 0%, #1A237E 100%);
+  }
+
+  .mask-perforation {
+    mask-image: radial-gradient(circle at 0px 50%, transparent 12px, black 13px),
+                radial-gradient(circle at 100% 50%, transparent 12px, black 13px);
+    mask-composite: intersect;
   }
 }
 

@@ -1,134 +1,212 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 
 export default function BookingDetail() {
-  const { toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const from = searchParams.get('from') || 'London';
-  const to = searchParams.get('to') || 'Paris';
-  const price = searchParams.get('price') || '45';
-  const seats = searchParams.get('seats') || '1';
+
+  const seats = searchParams.get('seats') || '12A';
+  const price = searchParams.get('price') || '120';
+  const from = searchParams.get('from') || 'Toshkent';
+  const to = searchParams.get('to') || 'Guanchjou';
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    passport: '',
+    nationality: 'O\'zbekiston',
+    email: '',
+    phone: ''
+  });
 
   return (
-    <div className="min-h-screen bg-background pb-28 transition-colors duration-300">
-      {/* AppBar */}
-      <header className="px-6 py-4 sticky top-0 z-50 bg-surface/95 backdrop-blur-md shadow-sm border-b border-outline-variant/30 flex items-center justify-between font-bold">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
-            <span className="material-symbols-outlined text-primary">arrow_back</span>
+    <div className="min-h-screen bg-surface font-body text-on-surface dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+      {/* TopAppBar - Restored from original design */}
+      <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm flex justify-between items-center px-6 h-16">
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200 text-indigo-900 dark:text-indigo-100">
+            <span className="material-symbols-outlined">arrow_back</span>
           </button>
-          <div className="flex flex-col">
-            <h1 className="font-extrabold text-on-surface tracking-tight leading-tight">Yo'lovchi ma'lumotlari</h1>
-            <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40">3/4 Qadam</span>
-          </div>
+          <h1 className="font-inter tracking-tight font-bold text-xl text-indigo-900 dark:text-indigo-100">To'lov qilish</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container transition-colors">
-             <span className="material-symbols-outlined text-primary dark:text-yellow-400 select-none">light_mode</span>
-          </button>
-          <div className="w-10 h-10 flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined">more_vert</span>
-          </div>
+            <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">
+                <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
+            </button>
+            <button className="w-10 h-10 flex items-center justify-center text-indigo-900 dark:text-indigo-100">
+              <span className="material-symbols-outlined">more_vert</span>
+            </button>
         </div>
       </header>
 
-      <main className="p-6 space-y-6 max-w-2xl mx-auto">
-        {/* Trip Summary Card */}
-        <section className="bg-primary rounded-[2.5rem] p-8 text-on-primary shadow-xl shadow-primary/10 relative overflow-hidden">
-          <div className="relative z-10">
-            <div className="mb-6 flex justify-between items-start">
-               <div className="space-y-1">
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-on-primary/60 font-bold">Tanlangan yo'nalish</p>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl font-extrabold text-on-primary tracking-tight">{from}</span>
-                    <span className="material-symbols-outlined text-on-primary/40">trending_flat</span>
-                    <span className="text-xl font-extrabold text-on-primary tracking-tight">{to}</span>
-                  </div>
-               </div>
-               <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-on-primary/60 font-bold">O'rindiqlar</p>
-                  <p className="text-xl font-black text-on-primary">{seats}</p>
-               </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-6 border-t border-on-primary/10">
-               <div>
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-on-primary/60 font-bold">Sana va vaqt</p>
-                  <p className="font-bold text-on-primary">05 Aprel • 10:15</p>
-               </div>
-               <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-on-primary/60 font-bold">Avtobus turi</p>
-                  <p className="font-bold text-on-primary">Biznes Klass</p>
-               </div>
-            </div>
-          </div>
-          {/* Decorative background shape */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-        </section>
-
-        {/* Passenger Form */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-2 text-primary font-bold">
-            <span className="w-1.5 h-6 bg-primary rounded-full"></span>
-            <h2 className="text-xl font-extrabold tracking-tight">Asosiy yo'lovchi</h2>
-          </div>
-
-          <div className="space-y-6 bg-surface p-8 rounded-[2rem] border border-outline-variant/30">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-on-surface-variant px-1 uppercase tracking-wider">To'liq ism</label>
-              <div className="relative flex items-center text-on-surface">
-                <span className="material-symbols-outlined absolute left-4 text-outline/40">person</span>
-                <input className="w-full pl-12 pr-4 py-4 bg-surface-container rounded-2xl border-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline/30" placeholder="Pasportdagidek yozing" type="text"/>
+      <main className="pt-24 pb-32 px-4 md:px-8 max-w-4xl mx-auto space-y-8">
+        {/* Trip Summary Mini-Card - Restored from legacy design */}
+        <section className="bg-surface-container-lowest dark:bg-slate-800 p-6 rounded-2xl shadow-[0px_4px_12px_rgba(25,28,29,0.03)] border-l-4 border-tertiary-fixed-dim dark:border-indigo-400">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">TANLANGAN YO'NALISH</p>
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold text-primary dark:text-indigo-300 tracking-tight">{from}</span>
+                <span className="material-symbols-outlined text-tertiary-fixed-dim">trending_flat</span>
+                <span className="text-xl font-extrabold text-primary dark:text-indigo-300 tracking-tight">{to}</span>
               </div>
             </div>
+            <div className="grid grid-cols-3 gap-6 border-t md:border-t-0 md:border-l border-surface-container-high dark:border-slate-700 pt-4 md:pt-0 md:pl-8">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">SANA</p>
+                <p className="text-sm font-semibold dark:text-slate-200">24-okt, 2023</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">VAQT</p>
+                <p className="text-sm font-semibold dark:text-slate-200">08:30</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">JOY</p>
+                <p className="text-sm font-bold text-tertiary-container dark:text-indigo-200 bg-tertiary-fixed/30 dark:bg-indigo-500/20 px-2 py-0.5 rounded-lg inline-block">{seats}</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* Passenger Details Form */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold tracking-tight text-primary dark:text-indigo-300 px-1">Yo'lovchi ma'lumotlari</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-on-surface-variant px-1 uppercase tracking-wider">Telefon raqam</label>
-              <div className="relative flex items-center text-on-surface">
-                <span className="material-symbols-outlined absolute left-4 text-outline/40">call</span>
-                <input className="w-full pl-12 pr-4 py-4 bg-surface-container rounded-2xl border-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline/30" placeholder="+998 90 123 45 67" type="tel"/>
+              <label className="text-xs font-bold text-on-surface-variant dark:text-slate-500 px-1 uppercase tracking-wider">To'liq ism-sharif</label>
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-4 text-outline">person</span>
+                <input 
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 bg-surface-container-high dark:bg-slate-800 border-none rounded-2xl focus:bg-surface-container-lowest dark:focus:bg-slate-700 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline text-on-surface dark:text-slate-100" 
+                  placeholder="Pasportdagidek yozing" 
+                  type="text" 
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-on-surface-variant dark:text-slate-500 px-1 uppercase tracking-wider">Pasport seriyasi va raqami</label>
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-4 text-outline">badge</span>
+                <input 
+                  value={formData.passport}
+                  onChange={(e) => setFormData({...formData, passport: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 bg-surface-container-high dark:bg-slate-800 border-none rounded-2xl focus:bg-surface-container-lowest dark:focus:bg-slate-700 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline text-on-surface dark:text-slate-100" 
+                  placeholder="AA1234567" 
+                  type="text" 
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-on-surface-variant dark:text-slate-500 px-1 uppercase tracking-wider">Fuqaroligi</label>
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-4 text-outline">public</span>
+                <select 
+                  value={formData.nationality}
+                  onChange={(e) => setFormData({...formData, nationality: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 bg-surface-container-high dark:bg-slate-800 border-none rounded-2xl focus:bg-surface-container-lowest dark:focus:bg-slate-700 focus:ring-2 focus:ring-primary/20 transition-all appearance-none text-on-surface dark:text-slate-100"
+                >
+                  <option>O'zbekiston</option>
+                  <option>China</option>
+                  <option>International</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-on-surface-variant dark:text-slate-500 px-1 uppercase tracking-wider">Elektron pochta</label>
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-4 text-outline">mail</span>
+                <input 
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 bg-surface-container-high dark:bg-slate-800 border-none rounded-2xl focus:bg-surface-container-lowest dark:focus:bg-slate-700 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline text-on-surface dark:text-slate-100" 
+                  placeholder="traveller@voyage.com" 
+                  type="email" 
+                />
+              </div>
+            </div>
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-xs font-bold text-on-surface-variant dark:text-slate-500 px-1 uppercase tracking-wider">Telefon raqami</label>
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-4 text-outline">call</span>
+                <input 
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 bg-surface-container-high dark:bg-slate-800 border-none rounded-2xl focus:bg-surface-container-lowest dark:focus:bg-slate-700 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline text-on-surface dark:text-slate-100" 
+                  placeholder="+998 90 123 45 67" 
+                  type="tel" 
+                />
               </div>
             </div>
           </div>
         </section>
 
         {/* Payment Methods */}
-        <section className="space-y-4">
-           <h2 className="text-xl font-extrabold text-on-surface tracking-tight">To'lov usuli</h2>
-           <div className="grid grid-cols-2 gap-4">
-              <div className="border-2 border-primary bg-primary/5 p-5 rounded-2xl flex flex-col items-center gap-3 relative cursor-pointer">
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
-                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">PayPal</span>
-                 <span className="material-symbols-outlined absolute top-2 right-2 text-primary text-sm">check_circle</span>
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold tracking-tight text-primary dark:text-indigo-300 px-1">To'lov usuli</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-6 bg-tertiary-container dark:bg-indigo-900/40 rounded-2xl border border-on-tertiary-container/30 dark:border-indigo-500/30 flex items-center gap-4 relative overflow-hidden group cursor-pointer transition-all active:scale-95 shadow-sm">
+                <div className="absolute -right-4 -top-4 w-16 h-16 bg-on-tertiary-container/10 rounded-full blur-2xl"></div>
+                <div className="w-12 h-12 flex items-center justify-center bg-on-tertiary-container dark:bg-indigo-500 text-white rounded-xl">
+                  <span className="material-symbols-outlined">credit_card</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-bold">Visa/Mastercard</p>
+                  <p className="text-on-tertiary-container dark:text-indigo-300 text-xs">Asosiy to'lov</p>
+                </div>
+                <div className="w-6 h-6 rounded-full bg-on-tertiary-container dark:bg-indigo-500 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[16px] text-tertiary-container dark:text-indigo-900 font-black fill-icon">check</span>
+                </div>
+            </div>
+            <div className="p-6 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl flex items-center gap-4 border border-transparent hover:border-outline-variant/30 dark:hover:border-slate-700 transition-all cursor-pointer active:scale-95 shadow-sm">
+              <div className="w-12 h-12 flex items-center justify-center bg-surface-container-high dark:bg-slate-700 text-on-surface-variant dark:text-slate-300 rounded-xl text-indigo-900 dark:text-indigo-400">
+                <span className="material-symbols-outlined">payments</span>
               </div>
-              <div className="border border-outline-variant/30 p-5 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-all cursor-pointer hover:bg-surface-container">
-                 <span className="material-symbols-outlined text-primary">credit_card</span>
-                 <span className="text-[10px] font-black uppercase tracking-widest text-on-surface">Karta orqali</span>
+              <div className="flex-1">
+                <p className="text-primary dark:text-indigo-200 font-bold">Apple Pay</p>
+                <p className="text-on-surface-variant dark:text-slate-500 text-xs">Tezkor to'lov</p>
               </div>
-           </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Upsell Banner (Bento Style) - Restored */}
+        <section className="bg-gradient-to-br from-indigo-900 to-indigo-700 rounded-3xl p-8 relative overflow-hidden text-white shadow-xl">
+          <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black tracking-tight">Sayohat sug'urtasi</h3>
+              <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo'g'i $12 evaziga sug'urtalang.</p>
+            </div>
+            <button className="bg-tertiary-fixed-dim dark:bg-indigo-400 text-tertiary-container dark:text-indigo-900 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">HIMOYA QO'SHISH</button>
+          </div>
         </section>
       </main>
 
-      {/* Pay and Confirm Bottom Panel */}
-      <div className="fixed bottom-0 left-0 w-full z-50 bg-surface/95 backdrop-blur-xl border-t border-outline-variant/30 p-6 shadow-[0_-8px_40px_rgba(0,0,0,0.08)] rounded-t-[2.5rem]">
-         <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <div>
-               <p className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest mb-1">To'lov summasi</p>
-               <p className="text-3xl font-black text-on-surface leading-tight">${price}</p>
-            </div>
-            <button 
-              onClick={() => router.push(`/ticket?from=${from}&to=${to}&price=${price}&seats=${seats}`)}
-              className="px-10 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center gap-2"
-            >
-              TO'LOV QILISH <span className="material-symbols-outlined text-sm">payments</span>
-            </button>
-         </div>
-      </div>
+      {/* Bottom Summary Bar - restored from original design */}
+      <nav className="fixed bottom-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-3xl shadow-[0px_-4px_12px_rgba(25,28,29,0.03)] flex justify-around items-center px-8 py-4">
+        <div className="flex flex-col items-start">
+          <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500">UMUMIY NARX</span>
+          <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100 tracking-tighter">${price}</span>
+        </div>
+        <div className="flex gap-4">
+          <button className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 py-2 hover:opacity-90 transition-opacity">
+            <span className="material-symbols-outlined mb-1">receipt_long</span>
+            <span className="font-inter text-[10px] uppercase tracking-widest font-bold">XULOSA</span>
+          </button>
+          <button 
+            onClick={() => router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${price}&name=${formData.fullName}`)}
+            className="flex items-center justify-center bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-800 dark:to-indigo-600 text-white rounded-2xl px-8 py-3 hover:opacity-90 transition-opacity active:scale-98 duration-150 gap-3 shadow-lg shadow-indigo-200/50"
+          >
+            <span className="material-symbols-outlined fill-icon text-sm">account_balance_wallet</span>
+            <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black underline-offset-4">HOZIROQ TO'LASH</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
