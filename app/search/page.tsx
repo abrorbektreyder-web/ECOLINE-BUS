@@ -43,19 +43,37 @@ export default function SearchResults() {
             .eq('destination_id', destination.id);
 
           if (tripsData) {
-            setBuses(tripsData.map(t => ({
-              id: t.id,
-              operator: t.buses.plate_number,
-              type: t.buses.bus_type,
-              departure: new Date(t.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              arrival: new Date(t.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              duration: '8 SOAT 15 DAQIQA', // Mock duration calculation
-              fromStation: from.toUpperCase() + ' MARKAZIY',
-              toStation: to.toUpperCase() + ' ASOSIY',
-              price: t.base_price,
-              seats: t.buses.total_seats,
-              isVIP: t.buses.bus_type.includes('VIP')
-            })));
+            // Dynamic Pricing Logic (V3 Killer Feature)
+            let tripDate = new Date(date);
+            if (isNaN(tripDate.getTime())) tripDate = new Date(); // fallback
+            const today = new Date();
+            const daysDiff = Math.ceil((tripDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+            const isWeekend = tripDate.getDay() === 0 || tripDate.getDay() === 6;
+            
+            let priceMultiplier = 1.0;
+            if (daysDiff <= 3 && daysDiff >= 0) priceMultiplier += 0.15; // 15% last-minute surge
+            if (isWeekend) priceMultiplier += 0.20; // 20% weekend surge
+
+            setBuses(tripsData.map(t => {
+              const finalPrice = Math.round(t.base_price * priceMultiplier);
+              const isHighDemand = priceMultiplier > 1.0;
+              
+              return {
+                id: t.id,
+                operator: t.buses.plate_number,
+                type: t.buses.bus_type,
+                departure: new Date(t.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                arrival: new Date(t.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                duration: '8 SOAT 15 DAQIQA', // Mock duration calculation
+                fromStation: from.toUpperCase() + ' MARKAZIY',
+                toStation: to.toUpperCase() + ' ASOSIY',
+                price: finalPrice,
+                originalPrice: isHighDemand ? t.base_price : null,
+                isHighDemand,
+                seats: t.buses.total_seats,
+                isVIP: t.buses.bus_type.includes('VIP')
+              };
+            }));
           }
         }
       } catch (err) {
@@ -147,17 +165,26 @@ export default function SearchResults() {
                     </div>
                   </div>
 
-                  {/* Pricing */}
+                  {/* Pricing (Dynamic Pricing V3) */}
                   <div className="flex flex-col items-end gap-1 pt-1">
-                    <span className={`${bus.isVIP ? 'text-primary dark:text-indigo-400' : 'text-on-surface dark:text-slate-100'} text-2xl font-bold tracking-tight`}>${bus.price}</span>
-                    <span className={`${bus.isCritical ? 'text-error animate-pulse' : 'text-on-surface-variant dark:text-slate-400'} text-xs font-medium`}>
-                      {bus.isCritical ? `Faqat ${bus.seats} ta joy qoldi` : `${bus.seats} ta joy qoldi`}
+                    {bus.isHighDemand && (
+                      <div className="flex items-center gap-1 bg-error/10 dark:bg-error/20 px-2 py-0.5 rounded text-[10px] text-error font-extrabold uppercase animate-pulse">
+                        <span className="material-symbols-outlined text-[12px]">trending_up</span>
+                        Talab yuqori
+                      </div>
+                    )}
+                    <span className={`${bus.isVIP ? 'text-primary dark:text-indigo-400' : 'text-on-surface dark:text-slate-100'} text-2xl font-bold tracking-tight`}>
+                      {bus.originalPrice && <span className="text-sm line-through text-on-surface-variant/50 mr-1 opacity-70">${bus.originalPrice}</span>}
+                      ${bus.price}
+                    </span>
+                    <span className={`${bus.seats < 10 ? 'text-error animate-pulse' : 'text-on-surface-variant dark:text-slate-400'} text-xs font-medium`}>
+                      {bus.seats < 10 ? `Faqat ${bus.seats} ta joy qoldi` : `${bus.seats} ta joy qoldi`}
                     </span>
                   </div>
                 </div>
 
-                <button className={`w-full h-14 rounded-xl ${bus.isVIP ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary' : 'bg-surface-container-high dark:bg-slate-700 text-on-surface dark:text-slate-100 hover:bg-surface-dim'} text-sm font-bold uppercase tracking-[0.05em] transition-all`}>
-                  JOY TANLASH
+                <button onClick={() => router.push('/seats-3d')} className={`w-full h-14 rounded-xl ${bus.isVIP ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary' : 'bg-surface-container-high dark:bg-slate-700 text-on-surface dark:text-slate-100 hover:bg-surface-dim'} text-sm font-bold uppercase tracking-[0.05em] transition-all`}>
+                  JOY TANLASH (3D)
                 </button>
               </article>
 

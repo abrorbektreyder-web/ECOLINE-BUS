@@ -6,6 +6,9 @@ import { useTheme } from '@/components/ThemeProvider';
 import { useLanguage } from '@/components/LanguageProvider';
 import BottomNav from '@/components/BottomNav';
 
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+
 // ---- Loyalty tiers ----
 const TIERS = [
   { key: 'bronze', label: 'Bronza', color: 'from-amber-700 to-orange-600', textColor: 'text-amber-700 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-900/20', icon: 'workspace_premium', trips: 0, cashbackRate: 2 },
@@ -30,24 +33,67 @@ export default function CashbackPage() {
   const { t } = useLanguage();
   const router = useRouter();
 
-  const [animatedPts, setAnimatedPts] = useState(0);
   const [calcAmount, setCalcAmount] = useState('150000');
+  
+  // Need a ref wrapper to scope gsap
+  const container = React.useRef<HTMLDivElement>(null);
+  const heroCardRef = React.useRef<HTMLSelectElement>(null);
+  const pointCounterRef = React.useRef<HTMLSpanElement>(null);
+  const tiersRef = React.useRef<HTMLDivElement>(null);
+  const barRef = React.useRef<HTMLDivElement>(null);
 
-  // Animated counter
-  useEffect(() => {
-    let start = 0;
-    const step = Math.ceil(TOTAL_POINTS / 60);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= TOTAL_POINTS) {
-        setAnimatedPts(TOTAL_POINTS);
-        clearInterval(timer);
-      } else {
-        setAnimatedPts(start);
+  // Gamification (V3 Vision Killer Feature)
+  useGSAP(() => {
+    const tl = gsap.timeline();
+    
+    // Animate Hero Card appearance with bouncy feel
+    tl.from(heroCardRef.current, {
+      y: 50,
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.8,
+      ease: "back.out(1.5)"
+    })
+    
+    // Animate points counter dynamically from 0 to TOTAL_POINTS
+    .to(pointCounterRef.current, {
+      innerHTML: TOTAL_POINTS,
+      duration: 1.5,
+      ease: "power2.out",
+      snap: { innerHTML: 1 },
+      onUpdate: function() {
+        if(pointCounterRef.current) {
+           pointCounterRef.current.innerHTML = Number(this.targets()[0].innerHTML).toLocaleString();
+        }
       }
-    }, 20);
-    return () => clearInterval(timer);
-  }, []);
+    }, "-=0.3")
+
+    // Animate the progression bar growing
+    .fromTo(barRef.current, 
+      { width: "0%" },
+      { width: `${tierProgress}%`, duration: 1.5, ease: "power4.out" }, 
+      "-=1.5"
+    )
+
+    // Stagger in the Loyalty Tier Cards, and bounce the active one!
+    .from(".tier-card", {
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "power2.out"
+    }, "-=1.0")
+    
+    // Add glowing pulse to the active tier!
+    .to(".tier-active-glow", {
+      scale: 1.05,
+      boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)",
+      yoyo: true,
+      repeat: -1,
+      duration: 1.5,
+      ease: "sine.inOut"
+    }, "-=0.2");
+  }, { scope: container });
 
   // Current tier — user has 12 trips → Gold (15 needed)
   const userTrips = 12;
@@ -62,7 +108,7 @@ export default function CashbackPage() {
   const calcPoints = Math.round((Number(calcAmount.replace(/\D/g, '')) || 0) * (currentTier.cashbackRate / 100) / 1000);
 
   return (
-    <div className="min-h-screen bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 pb-32 transition-colors duration-300">
+    <div ref={container} className="min-h-screen bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 pb-32 transition-colors duration-300">
 
       {/* Header */}
       <header className="px-6 py-4 sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm border-b border-outline-variant/10 dark:border-white/5 flex items-center justify-between">
@@ -83,7 +129,7 @@ export default function CashbackPage() {
       <main className="px-4 pt-6 max-w-2xl mx-auto space-y-4">
 
         {/* === HERO POINTS CARD === */}
-        <section className={`bg-gradient-to-br ${currentTier.color} rounded-[3rem] p-8 text-white shadow-2xl relative overflow-hidden`}>
+        <section ref={heroCardRef} className={`bg-gradient-to-br ${currentTier.color} rounded-[3rem] p-8 text-white shadow-2xl relative overflow-hidden`}>
           {/* Decorative blobs */}
           <div className="absolute -right-16 -top-16 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute -left-16 -bottom-16 w-48 h-48 bg-black/10 rounded-full blur-3xl" />
@@ -94,7 +140,7 @@ export default function CashbackPage() {
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70">{t('bonus_points')}</p>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-7xl font-black tabular-nums tracking-tighter">{animatedPts.toLocaleString()}</span>
+                  <span ref={pointCounterRef} className="text-7xl font-black tabular-nums tracking-tighter">0</span>
                   <span className="text-lg font-bold text-white/60 uppercase tracking-widest pb-1">Pts</span>
                 </div>
               </div>
@@ -124,8 +170,8 @@ export default function CashbackPage() {
                 </div>
                 <div className="h-2.5 bg-black/20 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000"
-                    style={{ width: `${tierProgress}%` }}
+                    ref={barRef}
+                    className="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                   />
                 </div>
                 <p className="text-[9px] font-bold text-white/60 text-right uppercase tracking-widest">{tierProgress}% complete</p>
@@ -145,7 +191,7 @@ export default function CashbackPage() {
               const isActive = i === currentTierIdx;
               const isDone = i < currentTierIdx;
               return (
-                <div key={tier.key} className={`flex flex-col items-center gap-2 p-3 rounded-2xl transition-all ${isActive ? tier.bgColor + ' ring-2 ring-indigo-500/20' : isDone ? 'opacity-60' : 'opacity-40'}`}>
+                <div key={tier.key} className={`tier-card flex flex-col items-center gap-2 p-3 rounded-2xl transition-all ${isActive ? tier.bgColor + ' ring-2 ring-indigo-500/20 tier-active-glow' : isDone ? 'opacity-60' : 'opacity-40'}`}>
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${tier.color} flex items-center justify-center shadow-sm`}>
                     <span className="material-symbols-outlined text-white text-xl">{tier.icon}</span>
                   </div>
