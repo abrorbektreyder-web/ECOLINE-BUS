@@ -130,8 +130,10 @@ export default function Home() {
               <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100">notifications</span>
               <span className="absolute top-1 right-1 w-2 h-2 bg-tertiary-fixed-dim rounded-full"></span>
             </button>
-            <button onClick={() => router.push('/profile')} className="active:scale-95 transition-transform">
-              <img alt="User profile" className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR6ub_C4_5BcOTxXPYX1LcFUiS9T9nvKqBEwar2zisKp4-PnnNeMDFaCfSQGrklcacClexZ64TBTxLTfXYXxHB0a3LB4mfhV3hy5UmMqyySKYjZvKlYjkxlkmBddilyAfWRKz4hP2E_naJPTjPBKg_n_ehtyzfRI3kVhYQbTqwHdO9gps7L69GDMa-aq6cpqq59MDgi4sB6X4bt-VCP5duWVhF9BA7VoL26xluw-MIK9noJR8unjigeZKpL0M_Y1DfuWlPnso8t00e" />
+            <button onClick={() => router.push('/profile')} className="active:scale-95 transition-transform flex-shrink-0">
+              <div className="w-10 h-10 rounded-full border-2 border-indigo-300 shadow-md overflow-hidden flex-shrink-0">
+                <img alt="User profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR6ub_C4_5BcOTxXPYX1LcFUiS9T9nvKqBEwar2zisKp4-PnnNeMDFaCfSQGrklcacClexZ64TBTxLTfXYXxHB0a3LB4mfhV3hy5UmMqyySKYjZvKlYjkxlkmBddilyAfWRKz4hP2E_naJPTjPBKg_n_ehtyzfRI3kVhYQbTqwHdO9gps7L69GDMa-aq6cpqq59MDgi4sB6X4bt-VCP5duWVhF9BA7VoL26xluw-MIK9noJR8unjigeZKpL0M_Y1DfuWlPnso8t00e" />
+              </div>
             </button>
           </div>
         </div>

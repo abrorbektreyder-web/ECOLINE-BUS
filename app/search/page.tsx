@@ -30,7 +30,7 @@ function SearchResultsContent() {
         const destination = citiesData?.find(c => c.name.toLowerCase().includes(to.toLowerCase()));
 
         if (origin && destination) {
-          const { data: tripsData, error } = await supabase
+          const { data: tripsData } = await supabase
             .from('trips')
             .select(`
               *,
@@ -50,26 +50,25 @@ function SearchResultsContent() {
             
             let priceMultiplier = 1.0;
             if (daysDiff <= 3 && daysDiff >= 0) priceMultiplier += 0.15;
-            if (isWeekend) priceMultiplier += 0.20;
+            if (isWeekend) priceMultiplier += 0.10;
 
             setBuses(tripsData.map(t => {
-              const finalPrice = Math.round(t.base_price * priceMultiplier);
+              const finalPrice = Math.round((t.base_price || 120) * priceMultiplier);
               const isHighDemand = priceMultiplier > 1.0;
-              
               return {
                 id: t.id,
-                operator: t.buses.plate_number,
-                type: t.buses.bus_type,
+                operator: t.buses?.plate_number || 'BusGo Express',
+                type: t.buses?.bus_type || 'Standard',
                 departure: new Date(t.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 arrival: new Date(t.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                duration: '8 SOAT 15 DAQIQA',
+                duration: '8 soat 15 daqiqa',
                 fromStation: from.toUpperCase() + ' MARKAZIY',
                 toStation: to.toUpperCase() + ' ASOSIY',
                 price: finalPrice,
-                originalPrice: isHighDemand ? t.base_price : null,
+                originalPrice: isHighDemand ? Math.round(t.base_price || 120) : null,
                 isHighDemand,
-                seats: t.buses.total_seats,
-                isVIP: t.buses.bus_type.includes('VIP')
+                seats: t.buses?.total_seats || 18,
+                isVIP: (t.buses?.bus_type || '').includes('VIP')
               };
             }));
           }
@@ -80,120 +79,169 @@ function SearchResultsContent() {
         setIsLoading(false);
       }
     }
-
     fetchTrips();
   }, [from, to, date]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
-        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-        <p className="text-on-surface-variant font-bold tracking-widest uppercase text-xs animate-pulse">Eng yaxshi safarlarni qidirmoqdamiz...</p>
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center gap-4">
+        <div className="w-14 h-14 border-4 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin" />
+        <p className="text-slate-400 font-semibold tracking-widest uppercase text-xs">Eng yaxshi reyslar izlanmoqda...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface dark:bg-slate-900 dark:text-slate-100 font-body antialiased pb-24 transition-colors duration-300">
-      <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm flex flex-col items-center pt-2 pb-2">
-        <div className="w-full flex justify-between items-center px-6 h-12">
-            <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100">arrow_back</span>
-            </button>
-            <div className="flex flex-col items-center">
-                <h1 className="font-inter tracking-tighter font-extrabold text-sm text-indigo-900 dark:text-indigo-100 uppercase">{from} → {to}</h1>
-                <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 uppercase tracking-widest mt-0.5">{date} · {buses.length} TA REYS TOPILDI</p>
-            </div>
-            <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <span className={`material-symbols-outlined transition-all transform ${theme === 'dark' ? 'text-yellow-400 rotate-0' : 'text-indigo-900 rotate-45'}`}>
-                    {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-                </span>
-            </button>
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans antialiased pb-28">
+      
+      {/* ── HEADER ── */}
+      <header className="fixed top-0 w-full z-50 bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50">
+        <div className="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto">
+          <button
+            onClick={() => router.back()}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-800 transition-colors"
+          >
+            <span className="material-symbols-outlined text-slate-300">arrow_back</span>
+          </button>
+
+          <div className="flex flex-col items-center">
+            <h1 className="font-extrabold text-sm text-white uppercase tracking-widest">
+              {from} → {to}
+            </h1>
+            <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mt-0.5">
+              {date} · {buses.length} ta reys topildi
+            </p>
+          </div>
+
+          <button
+            onClick={toggleTheme}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-800 transition-colors"
+          >
+            <span className={`material-symbols-outlined text-lg ${theme === 'dark' ? 'text-yellow-400' : 'text-indigo-300'}`}>
+              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
         </div>
       </header>
 
-      <main className="pt-24 px-4 space-y-6 max-w-2xl mx-auto">
+      {/* ── MAIN ── */}
+      <main className="pt-20 pb-6 px-4 max-w-2xl mx-auto space-y-4">
+
         {buses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
-            <div className="w-24 h-24 bg-surface-container-high dark:bg-slate-800 rounded-full flex items-center justify-center">
-              <span className="material-symbols-outlined text-indigo-300 transform scale-150">directions_bus</span>
+          <div className="flex flex-col items-center justify-center py-24 text-center gap-5">
+            <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center">
+              <span className="material-symbols-outlined text-slate-600 text-4xl">directions_bus</span>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-xl tracking-tight text-primary dark:text-indigo-200">Reyslar topilmadi</h3>
-              <p className="text-on-surface-variant dark:text-slate-500 text-sm max-w-xs font-medium">Uzr, tanlangan yo'nalish bo'yicha hozircha reyslar mavjud emas.</p>
+            <div>
+              <h3 className="font-bold text-lg text-slate-200">Reyslar topilmadi</h3>
+              <p className="text-slate-500 text-sm mt-1">Tanlangan yo'nalish uchun hozircha reys mavjud emas</p>
             </div>
-            <button onClick={() => router.back()} className="px-8 py-3 bg-primary dark:bg-indigo-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest">QADAM ORQAGA</button>
+            <button
+              onClick={() => router.back()}
+              className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm uppercase tracking-wide"
+            >
+              Orqaga qaytish
+            </button>
           </div>
         ) : (
           buses.map((bus, idx) => (
-            <div 
-              key={idx} 
-              className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-[0px_4px_24px_rgba(25,28,29,0.04)] border border-surface-container-high dark:border-slate-700 relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
+            <div
+              key={idx}
+              className="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/60 shadow-lg"
             >
-              {bus.isVIP && (
-                <div className="absolute top-0 right-10 bg-indigo-100 dark:bg-indigo-500 text-indigo-900 dark:text-white px-4 py-1 rounded-b-xl text-[10px] font-black tracking-[0.2em] uppercase shadow-sm">VIP LUXE</div>
-              )}
-              
-              {bus.isHighDemand && (
-                <div className="absolute top-0 left-10 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-4 py-1 rounded-b-xl text-[10px] font-black tracking-[0.2em] uppercase flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px] animate-pulse">local_fire_department</span>
-                  TALAB YUQORI
+              {/* ── BADGE ROW ── */}
+              {(bus.isHighDemand || bus.isVIP) && (
+                <div className="flex items-center gap-2 px-4 pt-3 pb-0">
+                  {bus.isHighDemand && (
+                    <span className="inline-flex items-center gap-1 bg-red-500/15 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-[12px]">local_fire_department</span>
+                      Talab yuqori
+                    </span>
+                  )}
+                  {bus.isVIP && (
+                    <span className="inline-flex items-center gap-1 bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-[12px]">diamond</span>
+                      VIP Luxe
+                    </span>
+                  )}
                 </div>
               )}
 
-              <div className="flex justify-between items-start mb-6 pt-4">
-                <div className="space-y-1">
-                  <p className="text-2xl font-black text-primary dark:text-indigo-200 tracking-tighter">{bus.departure}</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 uppercase tracking-widest">{bus.fromStation}</p>
+              {/* ── ROUTE ROW ── */}
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between gap-3">
+                {/* Departure */}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-2xl font-black text-white tracking-tight leading-none">{bus.departure}</span>
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide mt-1 truncate">{bus.fromStation}</span>
                 </div>
-                <div className="flex-1 flex flex-col items-center px-4 self-center space-y-1 opacity-40 group-hover:opacity-100 transition-opacity duration-500">
-                    <span className="text-[9px] font-black tracking-[0.1em]">{bus.duration}</span>
-                    <div className="w-full h-[1px] bg-slate-200 dark:bg-slate-700 relative flex items-center justify-center">
-                        <span className="material-symbols-outlined absolute bg-white dark:bg-slate-800 px-2 text-primary dark:text-indigo-400 text-sm">directions_bus</span>
-                    </div>
+
+                {/* Middle */}
+                <div className="flex flex-col items-center flex-shrink-0 gap-1 px-2">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest whitespace-nowrap">{bus.duration}</span>
+                  <div className="flex items-center gap-1 w-full">
+                    <div className="h-px w-8 bg-slate-600 rounded-full" />
+                    <span className="material-symbols-outlined text-indigo-400 text-base">directions_bus</span>
+                    <div className="h-px w-8 bg-slate-600 rounded-full" />
+                  </div>
                 </div>
-                <div className="space-y-1 text-right">
-                  <p className="text-2xl font-black text-primary dark:text-indigo-200 tracking-tighter">{bus.arrival}</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 uppercase tracking-widest">{bus.toStation}</p>
+
+                {/* Arrival */}
+                <div className="flex flex-col items-end min-w-0">
+                  <span className="text-2xl font-black text-white tracking-tight leading-none">{bus.arrival}</span>
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide mt-1 truncate text-right">{bus.toStation}</span>
                 </div>
               </div>
 
-              <div className="flex items-end justify-between border-t border-slate-100 dark:border-slate-700 pt-6">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em]">NARX</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-3xl font-black text-primary dark:text-indigo-100 tracking-tighter">${bus.price}</p>
+              {/* ── DIVIDER ── */}
+              <div className="mx-4 border-t border-slate-700/60" />
+
+              {/* ── PRICE + ACTION ROW ── */}
+              <div className="px-4 py-4 flex items-end justify-between gap-3">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">Narx</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl font-black text-white">${bus.price}</span>
                     {bus.originalPrice && (
-                      <span className="text-sm font-bold text-slate-400 dark:text-slate-600 line-through tracking-tighter">${bus.originalPrice}</span>
+                      <span className="text-xs text-slate-600 line-through">${bus.originalPrice}</span>
                     )}
                   </div>
+                  <span className={`text-[10px] font-bold mt-1 ${bus.seats < 10 ? 'text-orange-400 animate-pulse' : 'text-slate-500'}`}>
+                    {bus.seats < 10 ? `⚡ Faqat ${bus.seats} ta joy` : `${bus.seats} ta joy mavjud`}
+                  </span>
                 </div>
-                <div className="flex flex-col items-end gap-3">
-                    <p className="text-[10px] font-extrabold px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg text-primary dark:text-indigo-200 tracking-widest">FAQAT {bus.seats} TA JOY QOLDI</p>
-                    <button 
-                        onClick={() => router.push(`/seats-3d?from=${from}&to=${to}&date=${date}&price=${bus.price}&tripId=${bus.id}`)}
-                        className="bg-indigo-900 dark:bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg active:scale-95 transition-all"
-                    >
-                        JOY TANLASH
-                    </button>
-                </div>
+
+                <button
+                  onClick={() => router.push(`/seats-3d?from=${from}&to=${to}&date=${date}&price=${bus.price}&tripId=${bus.id}`)}
+                  className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-indigo-700/30"
+                >
+                  Joy tanlash
+                </button>
               </div>
             </div>
           ))
         )}
       </main>
 
-      <nav className="fixed bottom-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-3xl shadow-[0px_-4px_12px_rgba(0,0,0,0.03)] flex justify-around items-center px-10 h-20">
-        <button onClick={() => router.push('/')} className="flex flex-col items-center text-slate-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition-colors">
-            <span className="material-symbols-outlined mb-1">home</span>
-            <span className="text-[10px] font-bold tracking-widest">BOSH</span>
+      {/* ── BOTTOM NAV ── */}
+      <nav className="fixed bottom-0 w-full z-50 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around items-center h-20 px-6">
+        <button
+          onClick={() => router.push('/')}
+          className="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          <span className="material-symbols-outlined text-xl">home</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest">Bosh</span>
         </button>
-        <div className="w-16 h-16 bg-primary dark:bg-indigo-600 rounded-3xl -mt-10 flex items-center justify-center text-white shadow-xl shadow-primary/20 rotate-45 group">
-            <span className="material-symbols-outlined -rotate-45 group-hover:scale-110 transition-transform">search</span>
+
+        <div className="w-14 h-14 bg-indigo-600 rounded-2xl -mt-8 flex items-center justify-center shadow-xl shadow-indigo-700/40">
+          <span className="material-symbols-outlined text-white text-xl">search</span>
         </div>
-        <button onClick={() => router.push('/wallet/cashback')} className="flex flex-col items-center text-slate-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition-colors">
-            <span className="material-symbols-outlined mb-1">loyalty</span>
-            <span className="text-[10px] font-bold tracking-widest">BONUS</span>
+
+        <button
+          onClick={() => router.push('/wallet/cashback')}
+          className="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          <span className="material-symbols-outlined text-xl">loyalty</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest">Bonus</span>
         </button>
       </nav>
     </div>
@@ -203,14 +251,12 @@ function SearchResultsContent() {
 export default function SearchResults() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
-        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-        <p className="text-on-surface-variant font-bold tracking-widest uppercase text-xs">Yuklanmoqda...</p>
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center gap-4">
+        <div className="w-14 h-14 border-4 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin" />
+        <p className="text-slate-500 font-semibold tracking-widest uppercase text-xs">Yuklanmoqda...</p>
       </div>
     }>
-      <Suspense fallback={null}>
-        <SearchResultsContent />
-      </Suspense>
+      <SearchResultsContent />
     </Suspense>
   );
 }
