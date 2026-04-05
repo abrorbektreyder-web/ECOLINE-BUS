@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase } from '@/lib/supabase';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-export default function TicketSuccess() {
+function TicketSuccessContent() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -164,11 +164,10 @@ export default function TicketSuccess() {
           {/* QR Code Section */}
           <div className="bg-white dark:bg-slate-800 rounded-b-2xl p-8 pt-6 flex flex-col items-center shadow-[0px_12px_32px_rgba(25,28,29,0.05)] dark:shadow-none">
             <div className="bg-white p-4 rounded-xl border border-outline-variant/10 mb-6 group-hover:scale-105 transition-transform duration-500">
-              {/* Using a placeholder for QR, same as legacy src if reachable */}
               <img 
                 alt="Chipta QR" 
                 className="w-40 h-40" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgIhEMO8f9qek18DC1hTzjBaXvaHlKOdQHd3VmngmPr6K6IrFPxo62td8NqtQK-zeXG3X7dhPGktPAfv4Dp2BcMfYbjkfRAuaAkwUWrdOO (truncated)"
+                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-BG-99201-XT" 
                 onError={(e) => { e.currentTarget.src = "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-BG-99201-XT"; }} 
               />
             </div>
@@ -195,5 +194,18 @@ export default function TicketSuccess() {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function TicketSuccess() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <p className="text-on-surface-variant font-bold tracking-widest uppercase text-xs">Chipta tayyorlanmoqda...</p>
+      </div>
+    }>
+      <TicketSuccessContent />
+    </Suspense>
   );
 }

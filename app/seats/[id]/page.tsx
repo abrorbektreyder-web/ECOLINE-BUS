@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 
-export default function SeatSelection() {
+function SeatSelectionContent() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -27,11 +27,6 @@ export default function SeatSelection() {
 
   const Seat = ({ id, isOccupied = false }: { id: string, isOccupied?: boolean }) => {
     const isSelected = selectedSeats.includes(id);
-    
-    // Seat Colors logic:
-    // Selected: Blue (bg-indigo-600)
-    // Occupied: Red (bg-rose-500)
-    // Free: Gray (bg-slate-200 / dark:bg-slate-700)
     
     let seatClasses = "aspect-square rounded-xl transition-all duration-300 flex items-center justify-center font-bold text-xs";
     
@@ -56,7 +51,6 @@ export default function SeatSelection() {
 
   return (
     <div className="min-h-screen bg-surface font-body text-on-surface dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
-      {/* TopAppBar - Restored from original design */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0px_4px_12px_rgba(25,28,29,0.03)] flex items-center px-6 h-16">
         <div className="flex items-center justify-between w-full max-w-2xl mx-auto">
           <div className="flex items-center gap-4">
@@ -77,7 +71,6 @@ export default function SeatSelection() {
       </nav>
 
       <main className="pt-20 pb-64 px-6 max-w-lg mx-auto min-h-screen">
-        {/* Legend Section */}
         <div className="flex justify-center gap-6 mb-10 py-4 bg-surface-container-low dark:bg-slate-800/40 rounded-2xl border dark:border-white/5">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-md bg-slate-200 dark:bg-slate-700"></div>
@@ -93,9 +86,7 @@ export default function SeatSelection() {
           </div>
         </div>
 
-        {/* Bus Floorplan Container */}
         <div className="relative bg-surface-container-low dark:bg-slate-800/40 rounded-[40px] p-8 shadow-inner border border-white/40 dark:border-slate-700/30">
-          {/* Cockpit Area */}
           <div className="flex justify-between items-center mb-8 px-4 border-b border-outline-variant/10 dark:border-slate-700/30 pb-6">
             <div className="w-12 h-12 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <span className="material-symbols-outlined text-2xl">airline_seat_recline_extra</span>
@@ -109,9 +100,7 @@ export default function SeatSelection() {
             </div>
           </div>
 
-          {/* Seat Grid (2+2 Layout) */}
           <div className="grid grid-cols-5 gap-y-4 items-center max-w-[280px] mx-auto">
-            {/* Rows generated based on legacy template */}
             {[1, 2, 3, 4, 5, 6, 7].map((row) => (
               <React.Fragment key={row}>
                 <div className="col-span-2 grid grid-cols-2 gap-4">
@@ -127,14 +116,12 @@ export default function SeatSelection() {
             ))}
           </div>
 
-          {/* Rear Section */}
           <div className="mt-12 flex justify-center">
             <div className="h-1.5 w-16 bg-outline-variant/20 dark:bg-slate-700 rounded-full"></div>
           </div>
         </div>
       </main>
 
-      {/* Bottom Selection Detail (Bottom Sheet) */}
       <section className="fixed bottom-0 w-full z-50 rounded-t-[32px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl shadow-[0px_-12px_32px_rgba(25,28,29,0.08)] px-8 py-8 pb-safe">
         <div className="max-w-lg mx-auto">
           <div className="flex justify-between items-end mb-6">
@@ -164,5 +151,18 @@ export default function SeatSelection() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function SeatSelection() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <p className="text-on-surface-variant font-bold tracking-widest uppercase text-xs">Joylar sxemasi yuklanmoqda...</p>
+      </div>
+    }>
+      <SeatSelectionContent />
+    </Suspense>
   );
 }
