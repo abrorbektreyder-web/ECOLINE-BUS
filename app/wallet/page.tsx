@@ -1,20 +1,42 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import BottomNav from '@/components/BottomNav';
+import { useLanguage } from '@/components/LanguageProvider';
 
 export default function WalletPage() {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
+
+  const [cards, setCards] = useState([
+    { type: 'Visa', last4: '4242', balance: '$850.00', color: 'bg-indigo-900', logo: 'payments' },
+    { type: 'MasterCard', last4: '8812', balance: '$398.50', color: 'bg-slate-800', logo: 'account_balance_wallet' },
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newCardData, setNewCardData] = useState({ type: 'Visa', last4: '' });
 
   const balance = "$1,248.50";
   
-  const cards = [
-    { type: 'Visa', last4: '4242', balance: '$850.00', color: 'bg-indigo-900', logo: 'payments' },
-    { type: 'MasterCard', last4: '8812', balance: '$398.50', color: 'bg-slate-800', logo: 'account_balance_wallet' },
-  ];
+  const handleAddCard = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCardData.last4) return;
+
+    const newCard = {
+      type: newCardData.type,
+      last4: newCardData.last4,
+      balance: '$0.00',
+      color: newCardData.type === 'Visa' ? 'bg-blue-900' : (newCardData.type === 'MasterCard' ? 'bg-slate-800' : 'bg-emerald-950'),
+      logo: 'credit_card'
+    };
+
+    setCards([...cards, newCard]);
+    setIsModalOpen(false);
+    setNewCardData({ type: 'Visa', last4: '' });
+  };
 
   const transactions = [
     { label: 'Tashkent - Guangzhou Ticket', date: 'Bugun, 14:20', amount: '-$89.00', status: 'Debet' },
@@ -63,9 +85,12 @@ export default function WalletPage() {
                    </div>
                 </div>
               ))}
-              <button className="min-w-[140px] h-[180px] rounded-[2.5rem] border-2 border-dashed border-outline-variant dark:border-slate-700 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low dark:hover:bg-slate-800 transition-colors">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="min-w-[140px] h-[180px] rounded-[2.5rem] border-2 border-dashed border-outline-variant dark:border-slate-700 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low dark:hover:bg-slate-800 transition-colors"
+              >
                  <span className="material-symbols-outlined text-outline-variant dark:text-slate-600 text-3xl">add</span>
-                 <span className="text-[10px] font-black text-outline-variant/80 dark:text-slate-500 uppercase tracking-widest">KARTA QO'SHISH</span>
+                 <span className="text-[10px] font-black text-outline-variant/80 dark:text-slate-500 uppercase tracking-widest text-center">KARTA QO'SHISH</span>
               </button>
            </div>
         </section>
@@ -97,6 +122,59 @@ export default function WalletPage() {
       </main>
 
       <BottomNav />
+
+      {/* Add Card Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm transition-all">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[3rem] p-8 shadow-2xl border border-outline-variant/20 dark:border-white/5 animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-black text-indigo-900 dark:text-white uppercase tracking-tight">Karta Qiritish</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined text-on-surface">close</span>
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddCard} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">KARTA TURI</label>
+                <select 
+                  value={newCardData.type}
+                  onChange={(e) => setNewCardData({...newCardData, type: e.target.value})}
+                  className="w-full bg-surface-container-low dark:bg-slate-800 border-none rounded-2xl p-4 font-bold text-on-surface dark:text-slate-100 focus:ring-2 ring-indigo-500/20"
+                >
+                  <option value="Visa">Visa</option>
+                  <option value="MasterCard">MasterCard</option>
+                  <option value="Uzcard">Uzcard</option>
+                  <option value="Humo">Humo</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 ml-1">KARTA RAQAMI (OXIRGI 4 TA)</label>
+                <input 
+                  type="text"
+                  maxLength={4}
+                  placeholder="8888"
+                  value={newCardData.last4}
+                  onChange={(e) => setNewCardData({...newCardData, last4: e.target.value.replace(/\D/g, '')})}
+                  className="w-full bg-surface-container-low dark:bg-slate-800 border-none rounded-2xl p-4 font-bold text-on-surface dark:text-slate-100 focus:ring-2 ring-indigo-500/20 tabular-nums"
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full py-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-indigo-600/20 transition-all active:scale-[0.98]"
+              >
+                TASDIQLASH
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

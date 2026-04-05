@@ -26,15 +26,30 @@ export default function SeatSelection() {
   const totalPrice = selectedSeats.length * basePrice;
 
   const Seat = ({ id, isOccupied = false }: { id: string, isOccupied?: boolean }) => {
-    if (isOccupied) return <button className="aspect-square bg-surface-dim dark:bg-slate-700/50 rounded-xl cursor-not-allowed"></button>;
-    
     const isSelected = selectedSeats.includes(id);
+    
+    // Seat Colors logic:
+    // Selected: Blue (bg-indigo-600)
+    // Occupied: Red (bg-rose-500)
+    // Free: Gray (bg-slate-200 / dark:bg-slate-700)
+    
+    let seatClasses = "aspect-square rounded-xl transition-all duration-300 flex items-center justify-center font-bold text-xs";
+    
+    if (isOccupied) {
+      seatClasses += " bg-rose-500 text-white cursor-not-allowed";
+    } else if (isSelected) {
+      seatClasses += " bg-indigo-600 text-white shadow-lg ring-4 ring-indigo-500/20 active:scale-95 scale-105";
+    } else {
+      seatClasses += " bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 active:scale-90 border border-outline-variant/30";
+    }
+
     return (
       <button 
-        onClick={() => toggleSeat(id)}
-        className={`aspect-square ${isSelected ? 'seat-selected text-white shadow-lg ring-4 ring-primary/10' : 'bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/40 rounded-xl hover:border-primary/50 transition-colors'} active:scale-90 flex items-center justify-center font-bold text-[10px]`}
+        onClick={() => !isOccupied && toggleSeat(id)}
+        disabled={isOccupied}
+        className={seatClasses}
       >
-        {isSelected ? id : ''}
+        {!isOccupied && isSelected ? id : ''}
       </button>
     );
   };
@@ -65,34 +80,37 @@ export default function SeatSelection() {
         {/* Legend Section */}
         <div className="flex justify-center gap-6 mb-10 py-4 bg-surface-container-low dark:bg-slate-800/40 rounded-2xl border dark:border-white/5">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-md border border-outline-variant/30 bg-surface-container-lowest dark:bg-slate-800"></div>
-            <span className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant dark:text-slate-400 text-[9px] sm:text-[11px]">BO'SH</span>
+            <div className="w-4 h-4 rounded-md bg-slate-200 dark:bg-slate-700"></div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">BO'SH</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-md seat-selected shadow-sm"></div>
-            <span className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant dark:text-slate-400 text-[9px] sm:text-[11px]">TANLANGAN</span>
+            <div className="w-4 h-4 rounded-md bg-indigo-600 shadow-sm"></div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">TANLANGAN</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-md bg-surface-dim dark:bg-slate-700"></div>
-            <span className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant dark:text-slate-400 text-[9px] sm:text-[11px]">BAND</span>
+            <div className="w-4 h-4 rounded-md bg-rose-500"></div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant dark:text-slate-400">BAND</span>
           </div>
         </div>
 
         {/* Bus Floorplan Container */}
         <div className="relative bg-surface-container-low dark:bg-slate-800/40 rounded-[40px] p-8 shadow-inner border border-white/40 dark:border-slate-700/30">
           {/* Cockpit Area */}
-          <div className="flex justify-between items-center mb-12 px-4 border-b border-outline-variant/20 dark:border-slate-700/50 pb-8">
-            <div className="w-12 h-12 bg-surface-container-high dark:bg-slate-700 rounded-full flex items-center justify-center text-on-surface-variant dark:text-slate-300">
-              <span className="material-symbols-outlined text-3xl">steering_wheel_heat</span>
+          <div className="flex justify-between items-center mb-8 px-4 border-b border-outline-variant/10 dark:border-slate-700/30 pb-6">
+            <div className="w-12 h-12 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <span className="material-symbols-outlined text-2xl">airline_seat_recline_extra</span>
             </div>
             <div className="text-right">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 opacity-60">KIRISH</span>
-              <span className="block w-8 h-1 bg-tertiary-fixed-dim rounded-full mt-1 ml-auto"></span>
+              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-slate-500 opacity-60 italic">Driver Area</span>
+              <div className="flex items-center gap-1 mt-1 justify-end">
+                <span className="block w-6 h-1 bg-tertiary-fixed-dim rounded-full"></span>
+                <span className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-500">Entrance</span>
+              </div>
             </div>
           </div>
 
           {/* Seat Grid (2+2 Layout) */}
-          <div className="grid grid-cols-5 gap-y-6 items-center max-w-[280px] mx-auto">
+          <div className="grid grid-cols-5 gap-y-4 items-center max-w-[280px] mx-auto">
             {/* Rows generated based on legacy template */}
             {[1, 2, 3, 4, 5, 6, 7].map((row) => (
               <React.Fragment key={row}>
@@ -139,7 +157,7 @@ export default function SeatSelection() {
           <button 
             disabled={selectedSeats.length === 0}
             onClick={() => router.push(`/booking?seats=${selectedSeats.join(',')}&price=${totalPrice}&from=${from}&to=${to}`)}
-            className="w-full flex items-center justify-center gap-3 seat-selected text-white rounded-2xl px-6 py-5 font-bold text-sm tracking-[0.05em] uppercase shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale"
+            className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-2xl px-6 py-5 font-extrabold text-sm tracking-[0.1em] uppercase shadow-xl shadow-indigo-600/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale"
           >
             DAVOM ETISH <span className="material-symbols-outlined">arrow_forward</span>
           </button>

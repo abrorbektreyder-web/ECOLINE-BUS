@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { supabase } from '@/lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function BookingDetail() {
   const { theme, toggleTheme } = useTheme();
@@ -21,6 +23,48 @@ export default function BookingDetail() {
     email: '',
     phone: ''
   });
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handlePayment = async () => {
+    if (!formData.fullName || !formData.passport || !formData.email) {
+      setError('Iltimos, barcha ma\'lumotlarni kiriting');
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Simulate Payment Processing
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      const tripId = searchParams.get('tripId') || 'eeac130b-7791-423b-987a-82f72068326f'; // Fallback for demo
+      
+      const { data, error: dbError } = await supabase
+        .from('bookings')
+        .insert([{
+          trip_id: tripId,
+          seat_numbers: [parseInt(seats) || 12],
+          passenger_names: [formData.fullName],
+          passport_numbers: [formData.passport],
+          total_price: parseFloat(price),
+          status: 'paid',
+          user_email: formData.email,
+          qr_code: uuidv4()
+        }])
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
+
+      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${price}&name=${formData.fullName}&orderId=${data.id}`);
+    } catch (err: any) {
+      setError('To\'lovda xatolik yuz berdi: ' + err.message);
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface font-body text-on-surface dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -43,6 +87,12 @@ export default function BookingDetail() {
       </header>
 
       <main className="pt-24 pb-32 px-4 md:px-8 max-w-4xl mx-auto space-y-8">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative flex items-center gap-3">
+            <span className="material-symbols-outlined text-red-500">error</span>
+            <span className="text-sm font-semibold">{error}</span>
+          </div>
+        )}
         {/* Trip Summary Mini-Card - Restored from legacy design */}
         <section className="bg-surface-container-lowest dark:bg-slate-800 p-6 rounded-2xl shadow-[0px_4px_12px_rgba(25,28,29,0.03)] border-l-4 border-tertiary-fixed-dim dark:border-indigo-400">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -199,11 +249,21 @@ export default function BookingDetail() {
             <span className="font-inter text-[10px] uppercase tracking-widest font-bold">XULOSA</span>
           </button>
           <button 
-            onClick={() => router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${price}&name=${formData.fullName}`)}
-            className="flex items-center justify-center bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-800 dark:to-indigo-600 text-white rounded-2xl px-8 py-3 hover:opacity-90 transition-opacity active:scale-98 duration-150 gap-3 shadow-lg shadow-indigo-200/50"
+            onClick={handlePayment}
+            disabled={isProcessing}
+            className={`flex items-center justify-center ${isProcessing ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-800 dark:to-indigo-600'} text-white rounded-2xl px-8 py-3 hover:opacity-90 transition-opacity active:scale-98 duration-150 gap-3 shadow-lg shadow-indigo-200/50`}
           >
-            <span className="material-symbols-outlined fill-icon text-sm">account_balance_wallet</span>
-            <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black underline-offset-4">HOZIROQ TO'LASH</span>
+            {isProcessing ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black">TO'LOV KETMOQDA...</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined fill-icon text-sm">account_balance_wallet</span>
+                <span className="font-inter text-[10px] uppercase tracking-[0.15em] font-black underline-offset-4">HOZIROQ TO'LASH</span>
+              </>
+            )}
           </button>
         </div>
       </nav>

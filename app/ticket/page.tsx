@@ -3,16 +3,65 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { supabase } from '@/lib/supabase';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function TicketSuccess() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const name = searchParams.get('name') || 'Alexey Petrov';
-  const seats = searchParams.get('seats') || '12A';
-  const from = searchParams.get('from') || 'Toshkent';
-  const to = searchParams.get('to') || 'Guanchjou';
+  const nameInput = searchParams.get('name') || 'Alexey Petrov';
+  const seatsInput = searchParams.get('seats') || '12A';
+  const fromInput = searchParams.get('from') || 'Toshkent';
+  const toInput = searchParams.get('to') || 'Guanchjou';
+  const orderId = searchParams.get('orderId');
+
+  const [booking, setBooking] = React.useState<any>(null);
+  const ticketRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (orderId) {
+      const fetchBooking = async () => {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('*, trips(*, buses(*))')
+          .eq('id', orderId)
+          .single();
+        if (data) setBooking(data);
+      };
+      fetchBooking();
+    }
+  }, [orderId]);
+
+  const downloadPDF = async () => {
+    if (!ticketRef.current) return;
+    
+    // Set dark mode off temporarily for clean PDF or use current theme
+    const canvas = await html2canvas(ticketRef.current, {
+      scale: 2,
+      backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+      logging: false,
+      useCORS: true
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvas.width / 2, canvas.height / 2]
+    });
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+    pdf.save(`BusGo_Ticket_${orderId || 'DEMO'}.pdf`);
+  };
+
+  const name = booking?.passenger_names?.[0] || nameInput;
+  const seats = booking?.seat_numbers?.[0] || seatsInput;
+  const from = booking?.trips?.origin?.name || fromInput;
+  const to = booking?.trips?.destination?.name || toInput;
+  const ticketId = booking?.id?.slice(0, 8).toUpperCase() || 'BG-99201-XT';
 
   return (
     <div className="min-h-screen bg-surface font-body text-on-surface dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -45,7 +94,7 @@ export default function TicketSuccess() {
         </section>
 
         {/* Boarding Pass - restored from legacy design */}
-        <div className="relative group">
+        <div ref={ticketRef} className="relative group p-4 bg-transparent">
           {/* Top Section */}
           <div className="bg-white dark:bg-slate-800 rounded-t-2xl p-8 pb-10 shadow-[0px_4px_12px_rgba(25,28,29,0.03)] dark:shadow-none border-b border-dashed border-outline-variant/30 dark:border-slate-700">
             <div className="flex justify-between items-start mb-10">
@@ -132,7 +181,10 @@ export default function TicketSuccess() {
 
         {/* Action Buttons */}
         <section className="mt-12 space-y-4">
-          <button className="w-full h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container dark:from-indigo-700 dark:to-indigo-500 flex items-center justify-center gap-3 active:scale-95 transition-transform shadow-lg shadow-primary/20">
+          <button 
+            onClick={downloadPDF}
+            className="w-full h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container dark:from-indigo-700 dark:to-indigo-500 flex items-center justify-center gap-3 active:scale-95 transition-transform shadow-lg shadow-primary/20"
+          >
             <span className="material-symbols-outlined text-white">download</span>
             <span className="text-white font-bold text-sm tracking-wider uppercase">PDF YUKLAB OLISH</span>
           </button>

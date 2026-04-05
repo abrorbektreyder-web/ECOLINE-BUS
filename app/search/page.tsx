@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { supabase } from '@/lib/supabase';
 
 export default function SearchResults() {
   const { theme, toggleTheme } = useTheme();
@@ -14,55 +15,58 @@ export default function SearchResults() {
   const date = searchParams.get('date') || '24-okt, 2023';
 
   const [isLoading, setIsLoading] = useState(true);
+  const [buses, setBuses] = useState<any[]>([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, []);
+    async function fetchTrips() {
+      setIsLoading(true);
+      try {
+        // Find city IDs
+        const { data: citiesData } = await supabase
+          .from('cities')
+          .select('id, name')
+          .or(`name.ilike.%${from}%,name.ilike.%${to}%`);
 
-  const buses = [
-    { 
-      id: 1, 
-      operator: 'VIP EKSKLYUZIV', 
-      type: 'A2 Platforma', 
-      departure: '08:00', 
-      arrival: '16:15', 
-      duration: '8 SOAT 15 DAQIQA', 
-      fromStation: from.toUpperCase() + ' MARKAZIY',
-      toStation: to.toUpperCase() + ' ASOSIY',
-      toPlatform: 'G1 Platforma',
-      price: 120, 
-      seats: 12,
-      isVIP: true
-    },
-    { 
-      id: 2, 
-      operator: 'KOMFORT KLASS', 
-      type: 'B1 Platforma', 
-      departure: '10:30', 
-      arrival: '19:00', 
-      duration: '8 SOAT 30 DAQIQA', 
-      fromStation: from.toUpperCase() + ' MARKAZIY',
-      toStation: to.toUpperCase() + ' ASOSIY',
-      toPlatform: 'G2 Platforma',
-      price: 85, 
-      seats: 24
-    },
-    { 
-      id: 3, 
-      operator: 'TEJAMKOR EKONOM', 
-      type: 'C3 Platforma', 
-      departure: '14:00', 
-      arrival: '23:00', 
-      duration: '9 SOAT 00 DAQIQA', 
-      fromStation: from.toUpperCase() + ' MARKAZIY',
-      toStation: to.toUpperCase() + ' ASOSIY',
-      toPlatform: 'G4 Platforma',
-      price: 50, 
-      seats: 4,
-      isCritical: true
+        const origin = citiesData?.find(c => c.name.toLowerCase().includes(from.toLowerCase()));
+        const destination = citiesData?.find(c => c.name.toLowerCase().includes(to.toLowerCase()));
+
+        if (origin && destination) {
+          const { data: tripsData, error } = await supabase
+            .from('trips')
+            .select(`
+              *,
+              buses (*),
+              origin:cities!origin_id (name),
+              destination:cities!destination_id (name)
+            `)
+            .eq('origin_id', origin.id)
+            .eq('destination_id', destination.id);
+
+          if (tripsData) {
+            setBuses(tripsData.map(t => ({
+              id: t.id,
+              operator: t.buses.plate_number,
+              type: t.buses.bus_type,
+              departure: new Date(t.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              arrival: new Date(t.arrival_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              duration: '8 SOAT 15 DAQIQA', // Mock duration calculation
+              fromStation: from.toUpperCase() + ' MARKAZIY',
+              toStation: to.toUpperCase() + ' ASOSIY',
+              price: t.base_price,
+              seats: t.buses.total_seats,
+              isVIP: t.buses.bus_type.includes('VIP')
+            })));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  ];
+
+    fetchTrips();
+  }, [from, to]);
 
   if (isLoading) {
     return (

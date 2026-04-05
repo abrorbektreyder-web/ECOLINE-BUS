@@ -3,16 +3,19 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { useLanguage } from '@/components/LanguageProvider';
 import BottomNav from '@/components/BottomNav';
+import { Language } from '@/lib/translations';
 
 export default function ProfilePage() {
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
 
   const travelStats = [
-    { label: 'Jami safarlar', value: '12', icon: 'directions_bus' },
-    { label: 'Saqlangan joylar', value: '4', icon: 'bookmark' },
-    { label: 'Hamyon', value: '$124', icon: 'account_balance_wallet' },
+    { label: t('my_trips'), value: '12', icon: 'directions_bus' },
+    { label: t('popular_destinations'), value: '4', icon: 'bookmark' }, // Reusing for demo
+    { label: t('wallet'), value: '$124', icon: 'account_balance_wallet' },
   ];
 
   const menuItems = [
@@ -56,6 +59,30 @@ export default function ProfilePage() {
                    <span className="text-xl font-black text-indigo-600 dark:text-indigo-400 leading-none mb-1">{stat.value}</span>
                    <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/60 dark:text-slate-500 leading-tight">{stat.label}</span>
                 </div>
+              ))}
+           </div>
+        </section>
+
+        {/* Language Section - New */}
+        <section className="space-y-3">
+           <h3 className="text-xs font-black text-on-surface-variant dark:text-slate-500 uppercase tracking-[0.2em] px-2 mb-4">ILOVA TILI</h3>
+           <div className="flex gap-2">
+              {[
+                { code: 'uz', name: 'O\'zbekcha' },
+                { code: 'ru', name: 'Русский' },
+                { code: 'en', name: 'English' }
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code as Language)}
+                  className={`flex-1 py-4 px-2 rounded-2xl border-2 transition-all font-bold text-xs uppercase tracking-widest ${
+                    language === lang.code 
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-400' 
+                      : 'border-transparent bg-surface-container-low dark:bg-slate-800 text-on-surface-variant dark:text-slate-500 hover:border-outline-variant/30 dark:hover:border-slate-700'
+                  }`}
+                >
+                  {lang.name}
+                </button>
               ))}
            </div>
         </section>

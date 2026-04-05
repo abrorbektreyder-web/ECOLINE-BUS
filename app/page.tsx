@@ -3,11 +3,21 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
+import { useLanguage } from '@/components/LanguageProvider';
 import BottomNav from '@/components/BottomNav';
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+  const { t, language } = useLanguage();
   const router = useRouter();
+
+  const [from, setFrom] = React.useState('Toshkent');
+  const [to, setTo] = React.useState('Buxoro');
+
+  const handleSwap = () => {
+    setFrom(to);
+    setTo(from);
+  };
 
   // Destination Card data from legacy/01_Home_Search.html
   const destinations = [
@@ -64,8 +74,8 @@ export default function Home() {
       <main className="px-6 pt-8 max-w-2xl mx-auto">
         {/* Hero Greeting */}
         <section className="mb-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-on-primary-fixed dark:text-indigo-200 mb-1">Salom, Sayyoh!</h2>
-          <p className="text-on-surface-variant dark:text-slate-400 font-medium">Bugun qayerga sayohat qilishni xohlaysiz?</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-on-primary-fixed dark:text-indigo-200 mb-1">{language === 'ru' ? 'Привет, Турист!' : language === 'en' ? 'Hello, Traveler!' : 'Salom, Sayyoh!'}</h2>
+          <p className="text-on-surface-variant dark:text-slate-400 font-medium">{language === 'ru' ? 'Куда хотите отправиться сегодня?' : language === 'en' ? 'Where would you like to travel today?' : 'Bugun qayerga sayohat qilishni xohlaysiz?'}</p>
         </section>
 
         {/* Central Search Widget - Original Design Restoration */}
@@ -74,40 +84,57 @@ export default function Home() {
             <div className="space-y-4 relative">
               {/* From Field */}
               <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">From</label>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from')}</label>
                 <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                   <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">location_on</span>
-                  <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" placeholder="Jo'nash shahri" type="text" defaultValue="London, Viktoriya" />
+                  <input 
+                    id="origin-input" 
+                    className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
+                    placeholder={t('from')} 
+                    type="text" 
+                    value={from}
+                    onChange={(e) => setFrom(e.target.value)}
+                  />
                 </div>
               </div>
               
               {/* Swap Button */}
-              <div className="absolute right-8 top-[50%] -translate-y-[50%] z-10">
-                <button className="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+              <div className="absolute right-8 top-[50%] -translate-y-[50%] z-20">
+                <button 
+                  onClick={handleSwap}
+                  className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 text-white flex items-center justify-center shadow-lg active:scale-90 hover:scale-105 transition-all duration-300 z-30 relative"
+                >
                   <span className="material-symbols-outlined text-lg">swap_vert</span>
                 </button>
               </div>
 
               {/* To Field */}
               <div className="relative">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">To</label>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to')}</label>
                 <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                   <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">map</span>
-                  <input id="destination-input" className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" placeholder="Boradigan shahar" type="text" />
+                  <input 
+                    id="destination-input" 
+                    className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
+                    placeholder={t('to')} 
+                    type="text" 
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                  />
                 </div>
               </div>
 
               {/* Date & Travelers Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">Departure</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">calendar_today</span>
                     <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="24-okt, 2023" />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">Travelers</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('passengers')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">group</span>
                     <input className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100 text-sm" type="text" defaultValue="1 Kattalar" />
@@ -118,12 +145,11 @@ export default function Home() {
               {/* Search Button */}
               <button 
                 onClick={() => {
-                  const to = (document.getElementById('destination-input') as HTMLInputElement)?.value || 'Paris';
-                  router.push(`/search?from=London&to=${to}&date=24-okt, 2023`);
+                  router.push(`/search?from=${from}&to=${to}&date=24-okt, 2023`);
                 }}
                 className="w-full py-5 rounded-3xl bg-gradient-to-br from-primary to-primary-container text-white font-black uppercase tracking-widest text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
               >
-                <span>AVTOBUSLARNI QIDIRISH</span>
+                <span>{t('find_trips')}</span>
                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </button>
             </div>
