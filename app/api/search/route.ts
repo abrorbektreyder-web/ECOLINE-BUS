@@ -10,13 +10,22 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const from = searchParams.get('from') || '';
   const to = searchParams.get('to') || '';
-  const date = searchParams.get('date') || new Date().toISOString().split('T')[0];
+  const dateParam = searchParams.get('date') || '';
 
   try {
-    // Parse date range: selected day 00:00 → 23:59
-    const startOfDay = new Date(date);
+    let tripDate: Date;
+    // Handle "dd-MMM, yyyy" format (e.g., "06-Apr, 2026")
+    if (dateParam.includes(',')) {
+      tripDate = new Date(dateParam.replace('-', ' '));
+    } else {
+      tripDate = new Date(dateParam || new Date());
+    }
+
+    if (isNaN(tripDate.getTime())) tripDate = new Date();
+
+    const startOfDay = new Date(tripDate);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
+    const endOfDay = new Date(tripDate);
     endOfDay.setHours(23, 59, 59, 999);
 
     let query = supabase
