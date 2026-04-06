@@ -38,8 +38,8 @@ function Seat({ data, selected, onClick }: any) {
     }
   });
 
-  const baseColor = data.status === 'booked' ? '#334155' : selected ? '#10b981' : '#6366f1';
-  const cushionColor = data.status === 'booked' ? '#475569' : selected ? '#34d399' : '#818cf8';
+  const baseColor = data.status === 'booked' ? '#111111' : selected ? '#3b82f6' : '#9ca3af';
+  const cushionColor = data.status === 'booked' ? '#262626' : selected ? '#60a5fa' : '#cbd5e1';
 
   return (
     <group 
@@ -69,13 +69,6 @@ function Seat({ data, selected, onClick }: any) {
       <RoundedBox args={[0.4, 0.2, 0.1]} position={[0, 0.95, -0.3]} rotation={[-0.1, 0, 0]} radius={0.02} smoothness={4} castShadow>
         <meshStandardMaterial color="#e5e7eb" roughness={0.9} />
       </RoundedBox>
-
-      {/* Label */}
-      <Html position={[0, 0.6, -0.15]} center transform>
-        <div className="text-white font-bold select-none" style={{ fontSize: '10px' }}>
-          {data.name}
-        </div>
-      </Html>
     </group>
   );
 }
