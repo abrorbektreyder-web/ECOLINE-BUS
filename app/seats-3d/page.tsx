@@ -27,6 +27,29 @@ const SEATS = Array.from({ length: rows * 4 }).map((_, i) => {
 function Seat({ data, selected, onClick }: any) {
   const meshRef = useRef<THREE.Group>(null);
   
+  // Offline Text Generation (No CDN Fetching to prevent crashes!)
+  const labelTexture = React.useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, 128, 64);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; // subtle background for contrast
+      ctx.roundRect ? ctx.roundRect(0, 0, 128, 64, 16) : ctx.fillRect(0,0,128,64);
+      ctx.fill();
+      ctx.font = 'bold 36px "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+      ctx.fillStyle = data.status === 'booked' ? '#fca5a5' : '#ffffff'; // light red for booked, white others
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(data.name, 64, 34);
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.anisotropy = 4;
+    return tex;
+  }, [data.name, data.status]);
+
   // Subtle lazy animation
   useFrame((state) => {
     if (selected && meshRef.current) {
@@ -39,8 +62,8 @@ function Seat({ data, selected, onClick }: any) {
   });
 
   // Professional colors: Booked (Red), Selected (Blue), Free (Gray)
-  const baseColor = data.status === 'booked' ? '#991b1b' : selected ? '#2563eb' : '#64748b'; // darker red/blue/gray
-  const cushionColor = data.status === 'booked' ? '#ef4444' : selected ? '#3b82f6' : '#94a3b8'; // softer bright red/blue/gray
+  const baseColor = data.status === 'booked' ? '#991b1b' : selected ? '#2563eb' : '#64748b';
+  const cushionColor = data.status === 'booked' ? '#ef4444' : selected ? '#3b82f6' : '#94a3b8';
 
   return (
     <group 
@@ -71,18 +94,13 @@ function Seat({ data, selected, onClick }: any) {
         <meshStandardMaterial color="#e2e8f0" roughness={0.9} />
       </RoundedBox>
 
-      {/* 3D Seat Label Text */}
-      <Text 
-        position={[0, 0.6, -0.16]} 
-        fontSize={0.25} 
-        color={data.status === 'booked' ? '#fee2e2' : '#ffffff'} 
-        anchorX="center" 
-        anchorY="middle"
-        outlineWidth={0.01}
-        outlineColor="#000000"
-      >
-        {data.name}
-      </Text>
+      {/* 3D Seat Label Text (Offline CanvasTexture) */}
+      {labelTexture && (
+        <mesh position={[0, 0.6, -0.17]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[0.3, 0.15]} />
+          <meshBasicMaterial map={labelTexture} transparent opacity={0.95} alphaTest={0.1} />
+        </mesh>
+      )}
     </group>
   );
 }
