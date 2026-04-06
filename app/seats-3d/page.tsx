@@ -3,7 +3,7 @@
 import React, { useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, Text, ContactShadows, RoundedBox } from '@react-three/drei';
+import { OrbitControls, Html, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
 // --- MOCK SEATS CONFIG ---
@@ -71,9 +71,11 @@ function Seat({ data, selected, onClick }: any) {
       </RoundedBox>
 
       {/* Label */}
-      <Text position={[0, 0.6, -0.15]} fontSize={0.2} color="white" anchorX="center" anchorY="middle">
-        {data.name}
-      </Text>
+      <Html position={[0, 0.6, -0.15]} center transform>
+        <div className="text-white font-bold select-none" style={{ fontSize: '10px' }}>
+          {data.name}
+        </div>
+      </Html>
     </group>
   );
 }
@@ -145,7 +147,6 @@ function WebGLSeatsPage() {
             minAzimuthAngle={-Math.PI / 4}
             maxAzimuthAngle={Math.PI / 4}
           />
-          <Environment preset="city" />
         </Canvas>
       )}
 
