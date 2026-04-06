@@ -3,7 +3,7 @@
 import React, { useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Html, ContactShadows, RoundedBox } from '@react-three/drei';
+import { OrbitControls, Text, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
 // --- MOCK SEATS CONFIG ---
@@ -38,8 +38,9 @@ function Seat({ data, selected, onClick }: any) {
     }
   });
 
-  const baseColor = data.status === 'booked' ? '#111111' : selected ? '#3b82f6' : '#9ca3af';
-  const cushionColor = data.status === 'booked' ? '#262626' : selected ? '#60a5fa' : '#cbd5e1';
+  // Professional colors: Booked (Red), Selected (Blue), Free (Gray)
+  const baseColor = data.status === 'booked' ? '#991b1b' : selected ? '#2563eb' : '#64748b'; // darker red/blue/gray
+  const cushionColor = data.status === 'booked' ? '#ef4444' : selected ? '#3b82f6' : '#94a3b8'; // softer bright red/blue/gray
 
   return (
     <group 
@@ -52,7 +53,7 @@ function Seat({ data, selected, onClick }: any) {
       {/* Base/Legs */}
       <mesh position={[0, -0.3, 0]} castShadow>
         <boxGeometry args={[0.5, 0.6, 0.5]} />
-        <meshStandardMaterial color="#1f2937" metalness={0.8} />
+        <meshStandardMaterial color={data.status === 'booked' ? '#7f1d1d' : '#1e293b'} metalness={0.8} />
       </mesh>
       
       {/* Bottom Cushion */}
@@ -67,8 +68,21 @@ function Seat({ data, selected, onClick }: any) {
       
       {/* Headrest */}
       <RoundedBox args={[0.4, 0.2, 0.1]} position={[0, 0.95, -0.3]} rotation={[-0.1, 0, 0]} radius={0.02} smoothness={4} castShadow>
-        <meshStandardMaterial color="#e5e7eb" roughness={0.9} />
+        <meshStandardMaterial color="#e2e8f0" roughness={0.9} />
       </RoundedBox>
+
+      {/* 3D Seat Label Text */}
+      <Text 
+        position={[0, 0.6, -0.16]} 
+        fontSize={0.25} 
+        color={data.status === 'booked' ? '#fee2e2' : '#ffffff'} 
+        anchorX="center" 
+        anchorY="middle"
+        outlineWidth={0.01}
+        outlineColor="#000000"
+      >
+        {data.name}
+      </Text>
     </group>
   );
 }
