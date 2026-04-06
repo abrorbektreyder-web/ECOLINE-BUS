@@ -94,7 +94,7 @@ function TicketSuccessContent() {
         </div>
       </header>
 
-      <main className="pt-24 pb-32 px-6 max-w-lg mx-auto">
+      <main className="pt-24 pb-32 px-4 max-w-sm mx-auto w-full overflow-x-hidden">
         {/* Success State Header - Restored */}
         <section className="flex flex-col items-center mb-10 text-center">
           <div className="w-20 h-20 bg-tertiary-fixed-dim/20 dark:bg-indigo-400/20 rounded-full flex items-center justify-center mb-4">
@@ -105,55 +105,55 @@ function TicketSuccessContent() {
         </section>
 
         {/* Boarding Pass - restored from legacy design */}
-        <div ref={ticketRef} className="relative group p-4 bg-transparent">
+        <div ref={ticketRef} className="relative group bg-transparent overflow-hidden">
           {/* Top Section */}
-          <div className="bg-white dark:bg-slate-800 rounded-t-2xl p-8 pb-10 shadow-[0px_4px_12px_rgba(25,28,29,0.03)] dark:shadow-none border-b border-dashed border-outline-variant/30 dark:border-slate-700">
-            <div className="flex justify-between items-start mb-10">
-              <div className="space-y-1">
+          <div className="bg-white dark:bg-slate-800 rounded-t-2xl p-5 pb-8 shadow-[0px_4px_12px_rgba(25,28,29,0.03)] dark:shadow-none border-b border-dashed border-outline-variant/30 dark:border-slate-700">
+            <div className="flex justify-between items-start mb-8 gap-2">
+              <div className="space-y-1 min-w-0 flex-1">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">YO'LOVCHI</p>
-                <p className="text-xl font-bold tracking-tight text-primary dark:text-indigo-300">{name}</p>
+                <p className="text-lg font-bold tracking-tight text-primary dark:text-indigo-300 truncate">{name}</p>
               </div>
-              <div className="bg-tertiary-container dark:bg-indigo-500/10 px-3 py-1 rounded-full">
-                <span className="text-on-tertiary-container dark:text-indigo-400 text-[10px] font-bold tracking-wider uppercase">VIP Executive</span>
+              <div className="bg-tertiary-container dark:bg-indigo-500/10 px-2.5 py-1 rounded-full flex-shrink-0">
+                <span className="text-on-tertiary-container dark:text-indigo-400 text-[9px] font-bold tracking-wider uppercase whitespace-nowrap">VIP Executive</span>
               </div>
             </div>
             
             {/* Route */}
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 mb-10">
-              <div className="space-y-1">
-                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">{getCityAbbr(from)}</p>
-                <p className="text-on-surface-variant dark:text-slate-400 text-sm font-medium">{from}</p>
+            <div className="flex items-center justify-between mb-8 gap-1">
+              <div className="space-y-0.5 min-w-0 flex-1">
+                <p className="text-[28px] font-extrabold tracking-tighter text-on-surface dark:text-slate-100 leading-none">{getCityAbbr(from)}</p>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-medium truncate">{from}</p>
               </div>
-              <div className="flex flex-col items-center px-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="h-[2px] w-8 bg-surface-container-high dark:bg-slate-700 rounded-full"></div>
-                  <span className="material-symbols-outlined text-primary dark:text-indigo-400 text-xl">directions_bus</span>
-                  <div className="h-[2px] w-8 bg-surface-container-high dark:bg-slate-700 rounded-full"></div>
+              <div className="flex flex-col items-center flex-shrink-0 px-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <div className="h-[2px] w-5 bg-surface-container-high dark:bg-slate-700 rounded-full"></div>
+                  <span className="material-symbols-outlined text-primary dark:text-indigo-400 text-base">directions_bus</span>
+                  <div className="h-[2px] w-5 bg-surface-container-high dark:bg-slate-700 rounded-full"></div>
                 </div>
-                <p className="text-[10px] font-bold text-on-surface-variant/40 dark:text-slate-600 tracking-widest uppercase">{booking?.trips?.distance || "ECOLINE"}</p>
+                <p className="text-[9px] font-bold text-on-surface-variant/40 dark:text-slate-600 tracking-widest uppercase whitespace-nowrap">ECOLINE</p>
               </div>
-              <div className="space-y-1 text-right">
-                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">{getCityAbbr(to)}</p>
-                <p className="text-on-surface-variant dark:text-slate-400 text-sm font-medium">{to}</p>
+              <div className="space-y-0.5 text-right min-w-0 flex-1">
+                <p className="text-[28px] font-extrabold tracking-tighter text-on-surface dark:text-slate-100 leading-none">{getCityAbbr(to)}</p>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-medium truncate">{to}</p>
               </div>
             </div>
 
             {/* Trip Details Grid */}
-            <div className="grid grid-cols-2 gap-y-8">
+            <div className="grid grid-cols-2 gap-y-6">
               <div className="space-y-1">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">SANA</p>
-                <p className="font-bold text-on-surface dark:text-slate-200">
+                <p className="font-bold text-on-surface dark:text-slate-200 text-sm">
                   {booking?.trips?.departure_time 
                     ? new Date(booking.trips.departure_time).toLocaleDateString('uz-Latn-UZ', { day: 'numeric', month: 'short', year: 'numeric' })
-                    : '24-okt, 2023'}
+                    : searchParams.get('date') || '—'}
                 </p>
               </div>
               <div className="space-y-1 text-right">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">JO'NASH VAQTI</p>
-                <p className="font-bold text-on-surface dark:text-slate-200">
+                <p className="font-bold text-on-surface dark:text-slate-200 text-sm">
                   {booking?.trips?.departure_time
                     ? new Date(booking.trips.departure_time).toLocaleTimeString('uz-Latn-UZ', { hour: '2-digit', minute: '2-digit', hour12: false })
-                    : '08:30'}
+                    : searchParams.get('time') || '—'}
                 </p>
               </div>
               <div className="space-y-1">

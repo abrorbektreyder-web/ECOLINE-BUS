@@ -114,7 +114,7 @@ export default function TripsPage() {
                   </button>
                 )}
                 <button 
-                  onClick={() => router.push(`/ticket/${trip.id}`)}
+                  onClick={() => router.push(`/ticket?from=${trip.from}&to=${trip.to}&date=${encodeURIComponent(trip.date)}&time=${encodeURIComponent(trip.time)}&seats=${trip.seat}&name=&orderId=`)}
                   className="flex-1 py-4 rounded-2xl bg-surface-container dark:bg-slate-700 text-on-surface dark:text-white font-black uppercase tracking-widest text-[10px] hover:bg-surface-container-high dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined text-sm">confirmation_number</span>

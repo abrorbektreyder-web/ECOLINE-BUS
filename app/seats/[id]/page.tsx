@@ -13,6 +13,9 @@ function SeatSelectionContent() {
   const from = searchParams.get('from') || 'Toshkent';
   const to = searchParams.get('to') || 'Guanchjou';
   const basePrice = parseInt(searchParams.get('price') || '120');
+  const tripDate = searchParams.get('date') || '';
+  const tripTime = searchParams.get('time') || '';
+  const tripId = searchParams.get('tripId') || (params.id as string) || '';
 
   const [selectedSeats, setSelectedSeats] = useState<string[]>(['12A']);
 
@@ -143,7 +146,7 @@ function SeatSelectionContent() {
           </div>
           <button 
             disabled={selectedSeats.length === 0}
-            onClick={() => router.push(`/booking?seats=${selectedSeats.join(',')}&price=${totalPrice}&from=${from}&to=${to}`)}
+            onClick={() => router.push(`/booking?seats=${selectedSeats.join(',')}&price=${totalPrice}&from=${from}&to=${to}&tripId=${tripId}&date=${encodeURIComponent(tripDate)}&time=${encodeURIComponent(tripTime)}`)}
             className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-2xl px-6 py-5 font-extrabold text-sm tracking-[0.1em] uppercase shadow-xl shadow-indigo-600/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale"
           >
             DAVOM ETISH <span className="material-symbols-outlined">arrow_forward</span>

@@ -15,6 +15,9 @@ function BookingDetail() {
   const price = searchParams.get('price') || '120';
   const from = searchParams.get('from') || 'Toshkent';
   const to = searchParams.get('to') || 'Guanchjou';
+  const tripDate = searchParams.get('date') || '';
+  const tripTime = searchParams.get('time') || '';
+  const tripId = searchParams.get('tripId') || '';
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -41,10 +44,10 @@ function BookingDetail() {
       // Simulate Payment Processing
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      let tripId = searchParams.get('tripId');
+      let finalTripId = tripId;
       
       // Fallback: If no tripId in URL, fetch a random trip from the database to prevent foreign key constraint violations
-      if (!tripId || tripId === 'eeac130b-7791-423b-987a-82f72068326f') {
+      if (!finalTripId || finalTripId === 'eeac130b-7791-423b-987a-82f72068326f') {
           const { data: randomTrip } = await supabase
             .from('trips')
             .select('id')
@@ -52,7 +55,7 @@ function BookingDetail() {
             .single();
             
           if (randomTrip) {
-            tripId = randomTrip.id;
+            finalTripId = randomTrip.id;
           } else {
             throw new Error("Bazadan birorta ham reys topilmadi, iltimos oldin baza migratsiyasini bajaring.");
           }
@@ -61,7 +64,7 @@ function BookingDetail() {
       const { data, error: dbError } = await supabase
         .from('bookings')
         .insert([{
-          trip_id: tripId,
+          trip_id: finalTripId,
           seat_numbers: [parseInt(seats) || 12],
           passenger_names: [formData.fullName],
           passport_numbers: [formData.passport],
@@ -76,7 +79,7 @@ function BookingDetail() {
       if (dbError) throw dbError;
 
       const finalPrice = parseFloat(price) + (hasInsurance ? 12 : 0);
-      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data.id}`);
+      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data.id}&date=${encodeURIComponent(tripDate)}&time=${encodeURIComponent(tripTime)}`);
     } catch (err: any) {
       setError('To\'lovda xatolik yuz berdi: ' + err.message);
       setIsProcessing(false);
@@ -124,11 +127,11 @@ function BookingDetail() {
             <div className="grid grid-cols-3 gap-6 border-t md:border-t-0 md:border-l border-surface-container-high dark:border-slate-700 pt-4 md:pt-0 md:pl-8">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">SANA</p>
-                <p className="text-sm font-semibold dark:text-slate-200">24-okt, 2023</p>
+                <p className="text-sm font-semibold dark:text-slate-200">{tripDate || '—'}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">VAQT</p>
-                <p className="text-sm font-semibold dark:text-slate-200">08:30</p>
+                <p className="text-sm font-semibold dark:text-slate-200">{tripTime || '—'}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant dark:text-slate-500 font-bold">JOY</p>
