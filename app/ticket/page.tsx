@@ -1,11 +1,9 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/components/ThemeProvider';
 import { supabase } from '@/lib/supabase';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 function TicketSuccessContent() {
   const { theme, toggleTheme } = useTheme();
@@ -19,6 +17,8 @@ function TicketSuccessContent() {
   const orderId = searchParams.get('orderId');
 
   const [booking, setBooking] = React.useState<any>(null);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [walletAdded, setWalletAdded] = useState(false);
   const ticketRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -36,25 +36,39 @@ function TicketSuccessContent() {
   }, [orderId]);
 
   const downloadPDF = async () => {
-    if (!ticketRef.current) return;
-    
-    // Set dark mode off temporarily for clean PDF or use current theme
-    const canvas = await html2canvas(ticketRef.current, {
-      scale: 2,
-      backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-      logging: false,
-      useCORS: true
-    });
-    
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: [canvas.width / 2, canvas.height / 2]
-    });
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
-    pdf.save(`BusGo_Ticket_${orderId || 'DEMO'}.pdf`);
+    if (!ticketRef.current || isPdfLoading) return;
+    setIsPdfLoading(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
+      const canvas = await html2canvas(ticketRef.current, {
+        scale: 2,
+        backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width / 2, canvas.height / 2]
+      });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`Ecoline_Ticket_${ticketId}.pdf`);
+    } catch (err) {
+      console.error('PDF error:', err);
+      alert('PDF yuklab olishda xatolik yuz berdi.');
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
+  const addToWallet = () => {
+    setWalletAdded(true);
+    setTimeout(() => setWalletAdded(false), 3000);
   };
 
   const name = booking?.passenger_name || nameInput;
@@ -197,18 +211,38 @@ function TicketSuccessContent() {
           </div>
         </div>
 
+        {/* Wallet Toast */}
+        {walletAdded && (
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce">
+            <span className="material-symbols-outlined text-[18px]">check_circle</span>
+            <span className="font-bold text-sm">Wallet'ga qo'shildi!</span>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <section className="mt-12 space-y-4">
           <button 
             onClick={downloadPDF}
-            className="w-full h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container dark:from-indigo-700 dark:to-indigo-500 flex items-center justify-center gap-3 active:scale-95 transition-transform shadow-lg shadow-primary/20"
+            disabled={isPdfLoading}
+            className="w-full h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container dark:from-indigo-700 dark:to-indigo-500 flex items-center justify-center gap-3 active:scale-95 transition-transform shadow-lg shadow-primary/20 disabled:opacity-70"
           >
-            <span className="material-symbols-outlined text-white">download</span>
-            <span className="text-white font-bold text-sm tracking-wider uppercase">PDF YUKLAB OLISH</span>
+            {isPdfLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span className="text-white font-bold text-sm tracking-wider uppercase">Yuklanmoqda...</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-white">download</span>
+                <span className="text-white font-bold text-sm tracking-wider uppercase">PDF YUKLAB OLISH</span>
+              </>
+            )}
           </button>
-          <button className="w-full h-16 rounded-2xl bg-on-background dark:bg-slate-950 flex items-center justify-center gap-3 active:scale-95 transition-transform border border-white/5">
-            <span className="material-symbols-outlined text-white">wallet</span>
-            <span className="text-white font-bold text-sm tracking-wider uppercase">WALLET'GA QO'SHISH</span>
+          <button
+            onClick={addToWallet}
+            className="w-full h-16 rounded-2xl bg-on-background dark:bg-slate-950 flex items-center justify-center gap-3 active:scale-95 transition-transform border border-white/5">
+            <span className="material-symbols-outlined text-white">{walletAdded ? 'check_circle' : 'wallet'}</span>
+            <span className="text-white font-bold text-sm tracking-wider uppercase">{walletAdded ? "QO'SHILDI ✓" : "WALLET'GA QO'SHISH"}</span>
           </button>
         </section>
       </main>

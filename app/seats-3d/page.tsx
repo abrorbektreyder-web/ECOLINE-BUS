@@ -6,11 +6,11 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
-// --- MOCK SEATS CONFIG ---
+// --- SEAT LAYOUT TEMPLATE (no random - avoids hydration) ---
 const rows = 12;
-const SEATS = Array.from({ length: rows * 4 }).map((_, i) => {
+const SEAT_TEMPLATE = Array.from({ length: rows * 4 }).map((_, i) => {
   const row = Math.floor(i / 4);
-  const col = i % 4; // 0, 1 = left, 2, 3 = right
+  const col = i % 4;
   return {
     id: `S${i+1}`,
     name: `${row + 1}${['A', 'B', 'C', 'D'][col]}`,
@@ -19,9 +19,13 @@ const SEATS = Array.from({ length: rows * 4 }).map((_, i) => {
       0, 
       (row - rows/2) * 1.2
     ] as [number, number, number],
-    status: Math.random() > 0.7 ? 'booked' : 'free',
+    status: 'free' as 'free' | 'booked',
   };
 });
+
+// Deterministic booked pattern (no Math.random - safe for SSR)
+const BOOKED_INDICES = new Set([2, 5, 9, 13, 17, 22, 26, 30, 34, 38]);
+const SEATS = SEAT_TEMPLATE.map((s, i) => ({ ...s, status: BOOKED_INDICES.has(i) ? 'booked' as const : 'free' as const }));
 
 // A Single 3D Seat Component
 function Seat({ data, selected, onClick }: any) {
