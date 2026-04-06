@@ -142,11 +142,19 @@ function TicketSuccessContent() {
             <div className="grid grid-cols-2 gap-y-8">
               <div className="space-y-1">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">SANA</p>
-                <p className="font-bold text-on-surface dark:text-slate-200">24-okt, 2023</p>
+                <p className="font-bold text-on-surface dark:text-slate-200">
+                  {booking?.trips?.departure_time 
+                    ? new Date(booking.trips.departure_time).toLocaleDateString('uz-Latn-UZ', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '24-okt, 2023'}
+                </p>
               </div>
               <div className="space-y-1 text-right">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">JO'NASH VAQTI</p>
-                <p className="font-bold text-on-surface dark:text-slate-200">08:30 AM</p>
+                <p className="font-bold text-on-surface dark:text-slate-200">
+                  {booking?.trips?.departure_time
+                    ? new Date(booking.trips.departure_time).toLocaleTimeString('uz-Latn-UZ', { hour: '2-digit', minute: '2-digit', hour12: false })
+                    : '08:30'}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-on-surface-variant dark:text-slate-500 font-medium text-[11px] tracking-widest uppercase">JOY</p>
@@ -178,12 +186,12 @@ function TicketSuccessContent() {
               <img 
                 alt="Chipta QR" 
                 className="w-40 h-40" 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-BG-99201-XT" 
-                onError={(e) => { e.currentTarget.src = "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-BG-99201-XT"; }} 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-${ticketId}`} 
+                onError={(e) => { e.currentTarget.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BusGo-${ticketId}`; }} 
               />
             </div>
             <div className="text-center space-y-1">
-              <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 tracking-[0.2em] uppercase">CHIPTA ID: BG-99201-XT</p>
+              <p className="text-[10px] font-bold text-on-surface-variant dark:text-slate-500 tracking-[0.2em] uppercase">CHIPTA ID: {ticketId}</p>
               <p className="text-xs text-on-surface-variant/60 dark:text-slate-500/80">Chiptani tekshirish paytida ushbu QR kodni ko'rsating</p>
             </div>
           </div>
