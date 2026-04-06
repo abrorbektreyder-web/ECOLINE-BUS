@@ -63,6 +63,17 @@ function TicketSuccessContent() {
   const to = booking?.trips?.destination?.name || toInput;
   const ticketId = booking?.id?.slice(0, 8).toUpperCase() || 'BG-99201-XT';
 
+  const getCityAbbr = (city: string) => {
+    if (!city) return '';
+    const codes: Record<string, string> = {
+      'Toshkent': 'TAS',
+      'Guanchjou': 'CAN',
+      'Buxoro': 'BUX',
+      'Samarqand': 'SKD'
+    };
+    return codes[city] || city.substring(0, 3).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen bg-surface font-body text-on-surface dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
       {/* TopAppBar - Restored from original design */}
@@ -110,7 +121,7 @@ function TicketSuccessContent() {
             {/* Route */}
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 mb-10">
               <div className="space-y-1">
-                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">TAS</p>
+                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">{getCityAbbr(from)}</p>
                 <p className="text-on-surface-variant dark:text-slate-400 text-sm font-medium">{from}</p>
               </div>
               <div className="flex flex-col items-center px-4">
@@ -119,10 +130,10 @@ function TicketSuccessContent() {
                   <span className="material-symbols-outlined text-primary dark:text-indigo-400 text-xl">directions_bus</span>
                   <div className="h-[2px] w-8 bg-surface-container-high dark:bg-slate-700 rounded-full"></div>
                 </div>
-                <p className="text-[10px] font-bold text-on-surface-variant/40 dark:text-slate-600 tracking-widest uppercase">7,400 KM</p>
+                <p className="text-[10px] font-bold text-on-surface-variant/40 dark:text-slate-600 tracking-widest uppercase">{booking?.trips?.distance || "ECOLINE"}</p>
               </div>
               <div className="space-y-1 text-right">
-                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">CAN</p>
+                <p className="text-3xl font-extrabold tracking-tighter text-on-surface dark:text-slate-100">{getCityAbbr(to)}</p>
                 <p className="text-on-surface-variant dark:text-slate-400 text-sm font-medium">{to}</p>
               </div>
             </div>
