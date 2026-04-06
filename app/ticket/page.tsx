@@ -43,85 +43,119 @@ function TicketSuccessContent() {
 
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a5' });
       const W = pdf.internal.pageSize.getWidth();
+      const H = pdf.internal.pageSize.getHeight();
 
-      // ── Background ──────────────────────────────────────────
-      pdf.setFillColor(15, 23, 42);          // slate-900
-      pdf.roundedRect(0, 0, W, pdf.internal.pageSize.getHeight(), 0, 0, 'F');
+      // Helper to draw rounded rect with shadow-like feel
+      const drawCard = (x: number, y: number, w: number, h: number, r: number, color: [number, number, number]) => {
+        pdf.setFillColor(...color);
+        pdf.roundedRect(x, y, w, h, r, r, 'F');
+      };
 
-      // ── Header bar ──────────────────────────────────────────
-      pdf.setFillColor(99, 102, 241);        // indigo-500
-      pdf.roundedRect(20, 20, W - 40, 56, 8, 8, 'F');
+      // ── Background (Sleek Dark Mode) ──────────────────────────
+      pdf.setFillColor(15, 23, 42); // slate-900
+      pdf.rect(0, 0, W, H, 'F');
 
+      // ── Header (Indigo Gradient feel) ────────────────────────
+      drawCard(20, 20, W - 40, 60, 12, [79, 70, 229]); // indigo-600
+      
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(18);
+      pdf.setFontSize(22);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('ECOLINE', 36, 52);
+      pdf.text('ECOLINE', 40, 58);
 
-      pdf.setFontSize(9);
+      pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(199, 210, 254);       // indigo-200
-      pdf.text('E-CHIPTA / ELECTRONIC TICKET', W - 36, 52, { align: 'right' });
+      pdf.setTextColor(199, 210, 254);
+      pdf.text('BOARDING PASS / CHIPTA', W - 40, 56, { align: 'right' });
 
-      // ── Route ────────────────────────────────────────────────
-      pdf.setFillColor(30, 41, 59);          // slate-800
-      pdf.roundedRect(20, 90, W - 40, 76, 8, 8, 'F');
-
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(26);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(from.substring(0, 3).toUpperCase(), 36, 128);
-      pdf.text(to.substring(0, 3).toUpperCase(), W - 36, 128, { align: 'right' });
-
+      // ── Passenger Section ────────────────────────────────────
+      pdf.setTextColor(148, 163, 184); // slate-400
       pdf.setFontSize(9);
+      pdf.text('PASSENGER / YO\'LOVCHI', 40, 105);
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(name.toUpperCase(), 40, 125);
+
+      // ── Route Section ────────────────────────────────────────
+      drawCard(20, 145, W - 40, 90, 8, [30, 41, 59]); // slate-800
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(32);
+      pdf.text(getCityAbbr(from), 45, 195);
+      pdf.text(getCityAbbr(to), W - 45, 195, { align: 'right' });
+
+      pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(148, 163, 184);
-      pdf.text(from, 36, 148);
-      pdf.text(to, W - 36, 148, { align: 'right' });
+      pdf.text(from, 45, 215);
+      pdf.text(to, W - 45, 215, { align: 'right' });
 
-      // Arrow
+      // Bus Icon Simulator
       pdf.setDrawColor(99, 102, 241);
-      pdf.setLineWidth(1.5);
-      pdf.line(W / 2 - 18, 122, W / 2 + 18, 122);
-      pdf.triangle(W / 2 + 14, 118, W / 2 + 14, 126, W / 2 + 22, 122, 'F');
+      pdf.setLineWidth(2);
+      pdf.line(W/2 - 25, 185, W/2 + 25, 185);
+      pdf.circle(W/2, 185, 8, 'S');
 
-      // ── Divider dashed ───────────────────────────────────────
+      // ── Details Grid ────────────────────────────────────────
+      const tripDate = booking?.trips?.departure_time 
+        ? new Date(booking.trips.departure_time).toLocaleDateString('en-GB')
+        : searchParams.get('date') || '—';
+      const tripTime = booking?.trips?.departure_time
+        ? new Date(booking.trips.departure_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+        : searchParams.get('time') || '—';
+
+      const gridY = 255;
+      const drawDetail = (label: string, value: string, x: number, y: number, align: 'left' | 'right' = 'left') => {
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(label, x, y, { align });
+        pdf.setFontSize(11);
+        pdf.setTextColor(248, 250, 252);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(value, x, y + 15, { align });
+      };
+
+      drawDetail('DATE / SANA', tripDate, 40, gridY);
+      drawDetail('TIME / VAQT', tripTime, W - 40, gridY, 'right');
+      drawDetail('SEAT / JOY', String(seats), 40, gridY + 45);
+      drawDetail('GATE / PERRON', 'GATE 04', W - 40, gridY + 45, 'right');
+
+      // ── Perforation ──────────────────────────────────────────
       pdf.setDrawColor(51, 65, 85);
-      pdf.setLineDashPattern([4, 3], 0);
-      pdf.line(20, 180, W - 20, 180);
+      pdf.setLineDashPattern([5, 5], 0);
+      pdf.line(20, 340, W - 20, 340);
       pdf.setLineDashPattern([], 0);
 
-      // ── Details grid ─────────────────────────────────────────
-      const details = [
-        ['YO\'LOVCHI', name.toUpperCase()],
-        ['JOY RAQAMI', String(seats)],
-        ['CHIPTA ID', ticketId],
-        ['STATUS', 'TO\'LANGAN ✓'],
-      ];
-      let y = 200;
-      details.forEach(([label, value]) => {
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(100, 116, 139);
-        pdf.text(label, 36, y);
-
-        pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(226, 232, 240);
-        pdf.text(value, 36, y + 16);
-        y += 44;
+      // ── QR Code ──────────────────────────────────────────────
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BusGo-${ticketId}`;
+      
+      // We load the image as base64 first to ensure it's ready for PDF
+      const response = await fetch(qrUrl);
+      const blob = await response.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
       });
 
-      // ── Footer ───────────────────────────────────────────────
+      pdf.setFillColor(255, 255, 255);
+      pdf.roundedRect(W/2 - 50, 360, 100, 100, 10, 10, 'F');
+      pdf.addImage(base64, 'PNG', W/2 - 40, 370, 80, 80);
+
+      pdf.setTextColor(148, 163, 184);
       pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(51, 65, 85);
-      pdf.text('Ushbu chipta ECOLINE avtobusida amal qiladi.', W / 2, 370, { align: 'center' });
-      pdf.text('ecoline.uz | +998 71 200 00 00', W / 2, 384, { align: 'center' });
+      pdf.text(`ID: ${ticketId}`, W/2, 475, { align: 'center' });
+
+      // ── Footer ───────────────────────────────────────────────
+      pdf.setFontSize(7);
+      pdf.text('This is an official ECOLINE e-ticket. Please present it during boarding.', W / 2, H - 25, { align: 'center' });
 
       pdf.save(`Ecoline_Ticket_${ticketId}.pdf`);
     } catch (err) {
       console.error('PDF error:', err);
-      alert('PDF yuklab olishda xatolik yuz berdi.');
+      alert('PDF yuklab olishda xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
     } finally {
       setIsPdfLoading(false);
     }
