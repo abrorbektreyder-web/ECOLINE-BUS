@@ -29,6 +29,7 @@ function BookingDetail() {
 
   const [hasInsurance, setHasInsurance] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handlePayment = async () => {
@@ -77,7 +78,15 @@ function BookingDetail() {
       if (dbError) throw dbError;
 
       const finalPrice = parseFloat(price) + (hasInsurance ? 15000 : 0);
-      router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data.id}&date=${encodeURIComponent(tripDate)}&time=${encodeURIComponent(tripTime)}`);
+      
+      // Show success modal instead of immediate redirect
+      setShowSuccessModal(true);
+      
+      // Redirect after a 2-second celebration delay
+      setTimeout(() => {
+         router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data?.id || 'TEST-ORDER'}&date=${encodeURIComponent(tripDate)}&time=${encodeURIComponent(tripTime)}`);
+      }, 2500);
+
     } catch (err: any) {
       setError('To\'lovda xatolik yuz berdi: ' + err.message);
       setIsProcessing(false);
@@ -297,6 +306,20 @@ function BookingDetail() {
           </button>
         </div>
       </nav>
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-800 rounded-[2rem] p-8 max-w-sm w-full mx-auto text-center space-y-6 shadow-2xl scale-in-center animate-in zoom-in-95 duration-500 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
+            <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-[48px] text-emerald-500">check_circle</span>
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">To'lov muvaffaqiyatli!</h2>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">Chiptangiz shakllantirilmoqda, iltimos kuting...</p>
+            <div className="w-8 h-8 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mt-6"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
