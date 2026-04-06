@@ -25,36 +25,10 @@ export default function Home() {
     return `${day}.${month}.${d.getFullYear()}`;
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     setIsLoading(true);
-    try {
-      // 1. Get City IDs
-      const { data: originCity } = await supabase.from('cities').select('id').ilike('name', from).single();
-      const { data: destCity } = await supabase.from('cities').select('id').ilike('name', to).single();
-
-      if (!originCity || !destCity) {
-        alert(t('cities_not_found') || 'Shaharlar topilmadi');
-        return;
-      }
-
-      // 2. Fetch Trips (for validation or pre-check)
-      const { data: trips, error } = await supabase
-        .from('trips')
-        .select(`id`)
-        .eq('origin_id', originCity.id)
-        .eq('destination_id', destCity.id)
-        .eq('status', 'active');
-
-      if (error) throw error;
-
-      // Navigate to results page
-      router.push(`/search?from=${from}&to=${to}&date=${date}`);
-    } catch (error) {
-      console.error('Search error:', error);
-      alert('Tizimda xatolik yuz berdi');
-    } finally {
-      setIsLoading(false);
-    }
+    // Directly navigate to the results page, the search page handles the actual fetching from Supabase
+    router.push(`/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}`);
   };
 
   const handleSwap = () => {
@@ -123,7 +97,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-indigo-900/30 transition-all duration-300 active:scale-95">
-                <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
+              <span className={`material-symbols-outlined transition-all duration-500 transform ${theme === 'dark' ? 'text-yellow-400 rotate-0 scale-110' : 'text-indigo-900 -rotate-45 scale-100'}`}>light_mode</span>
             </button>
             <button onClick={() => router.push('/profile')} className="relative p-1 active:scale-95 transition-transform">
               <span className="material-symbols-outlined text-indigo-900 dark:text-indigo-100">notifications</span>
@@ -155,20 +129,20 @@ export default function Home() {
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('from_label')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">location_on</span>
-                    <input 
-                      id="origin-input" 
-                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
-                      placeholder={t('from')} 
-                      type="text" 
+                    <input
+                      id="origin-input"
+                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100"
+                      placeholder={t('from')}
+                      type="text"
                       value={from}
                       onChange={(e) => setFrom(e.target.value)}
                     />
                   </div>
                 </div>
-                
+
                 {/* Swap Button */}
                 <div className="absolute right-8 top-[50%] -translate-y-[50%] z-20">
-                  <button 
+                  <button
                     onClick={handleSwap}
                     className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 text-white flex items-center justify-center shadow-lg active:scale-90 hover:scale-105 transition-all duration-300 z-30 relative"
                   >
@@ -181,11 +155,11 @@ export default function Home() {
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('to_label')}</label>
                   <div className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-surface-container-lowest focus-within:ring-2 ring-primary/5">
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-3">map</span>
-                    <input 
-                      id="destination-input" 
-                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100" 
-                      placeholder={t('to')} 
-                      type="text" 
+                    <input
+                      id="destination-input"
+                      className="bg-transparent border-none p-0 focus:ring-0 w-full font-semibold text-on-surface dark:text-slate-100"
+                      placeholder={t('to')}
+                      type="text"
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                     />
@@ -197,22 +171,22 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 dark:text-slate-500 mb-1.5 ml-1">{t('date_label')}</label>
-                  <label 
+                  <label
                     className="flex items-center bg-surface-container-low dark:bg-slate-800 rounded-2xl p-4 group transition-all focus-within:bg-indigo-50 dark:focus-within:bg-indigo-900/10 cursor-pointer border border-transparent focus-within:border-indigo-200 dark:focus-within:border-indigo-800"
                     onClick={() => {
-                        try {
-                            dateInputRef.current?.showPicker();
-                        } catch (e) {
-                            dateInputRef.current?.focus();
-                        }
+                      try {
+                        dateInputRef.current?.showPicker();
+                      } catch (e) {
+                        dateInputRef.current?.focus();
+                      }
                     }}
                   >
                     <span className="material-symbols-outlined text-primary/60 dark:text-indigo-400 mr-2 md:mr-3 shrink-0">calendar_today</span>
                     <span className="font-semibold text-on-surface dark:text-slate-100 text-sm truncate flex-1">{formatDate(date)}</span>
-                    <input 
+                    <input
                       ref={dateInputRef}
-                      type="date" 
-                      className="absolute inset-0 opacity-0 pointer-events-none" 
+                      type="date"
+                      className="absolute inset-0 opacity-0 pointer-events-none"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                     />
@@ -228,7 +202,7 @@ export default function Home() {
               </div>
 
               {/* Search Button */}
-              <button 
+              <button
                 onClick={handleSearch}
                 disabled={isLoading}
                 className="w-full py-5 rounded-3xl bg-gradient-to-br from-primary to-primary-container text-white font-black uppercase tracking-widest text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70"
@@ -265,7 +239,7 @@ export default function Home() {
                     src={dest.image}
                     alt={dest.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    onError={(e) => { e.currentTarget.src = `https://picsum.photos/seed/${i+1}/800/600`; }}
+                    onError={(e) => { e.currentTarget.src = `https://picsum.photos/seed/${i + 1}/800/600`; }}
                   />
                   <div className="absolute bottom-6 left-6 z-20">
                     {dest.badge && (
