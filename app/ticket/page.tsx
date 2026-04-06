@@ -36,27 +36,88 @@ function TicketSuccessContent() {
   }, [orderId]);
 
   const downloadPDF = async () => {
-    if (!ticketRef.current || isPdfLoading) return;
+    if (isPdfLoading) return;
     setIsPdfLoading(true);
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const jsPDF = (await import('jspdf')).default;
-      
-      const canvas = await html2canvas(ticketRef.current, {
-        scale: 2,
-        backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
+      const { default: jsPDF } = await import('jspdf');
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a5' });
+      const W = pdf.internal.pageSize.getWidth();
+
+      // ── Background ──────────────────────────────────────────
+      pdf.setFillColor(15, 23, 42);          // slate-900
+      pdf.roundedRect(0, 0, W, pdf.internal.pageSize.getHeight(), 0, 0, 'F');
+
+      // ── Header bar ──────────────────────────────────────────
+      pdf.setFillColor(99, 102, 241);        // indigo-500
+      pdf.roundedRect(20, 20, W - 40, 56, 8, 8, 'F');
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('ECOLINE', 36, 52);
+
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(199, 210, 254);       // indigo-200
+      pdf.text('E-CHIPTA / ELECTRONIC TICKET', W - 36, 52, { align: 'right' });
+
+      // ── Route ────────────────────────────────────────────────
+      pdf.setFillColor(30, 41, 59);          // slate-800
+      pdf.roundedRect(20, 90, W - 40, 76, 8, 8, 'F');
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(26);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(from.substring(0, 3).toUpperCase(), 36, 128);
+      pdf.text(to.substring(0, 3).toUpperCase(), W - 36, 128, { align: 'right' });
+
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(148, 163, 184);
+      pdf.text(from, 36, 148);
+      pdf.text(to, W - 36, 148, { align: 'right' });
+
+      // Arrow
+      pdf.setDrawColor(99, 102, 241);
+      pdf.setLineWidth(1.5);
+      pdf.line(W / 2 - 18, 122, W / 2 + 18, 122);
+      pdf.triangle(W / 2 + 14, 118, W / 2 + 14, 126, W / 2 + 22, 122, 'F');
+
+      // ── Divider dashed ───────────────────────────────────────
+      pdf.setDrawColor(51, 65, 85);
+      pdf.setLineDashPattern([4, 3], 0);
+      pdf.line(20, 180, W - 20, 180);
+      pdf.setLineDashPattern([], 0);
+
+      // ── Details grid ─────────────────────────────────────────
+      const details = [
+        ['YO\'LOVCHI', name.toUpperCase()],
+        ['JOY RAQAMI', String(seats)],
+        ['CHIPTA ID', ticketId],
+        ['STATUS', 'TO\'LANGAN ✓'],
+      ];
+      let y = 200;
+      details.forEach(([label, value]) => {
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(label, 36, y);
+
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(226, 232, 240);
+        pdf.text(value, 36, y + 16);
+        y += 44;
       });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width / 2, canvas.height / 2]
-      });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+
+      // ── Footer ───────────────────────────────────────────────
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(51, 65, 85);
+      pdf.text('Ushbu chipta ECOLINE avtobusida amal qiladi.', W / 2, 370, { align: 'center' });
+      pdf.text('ecoline.uz | +998 71 200 00 00', W / 2, 384, { align: 'center' });
+
       pdf.save(`Ecoline_Ticket_${ticketId}.pdf`);
     } catch (err) {
       console.error('PDF error:', err);
