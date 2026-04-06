@@ -141,7 +141,7 @@ function SeatSelectionContent() {
             </div>
             <div className="text-right">
               <span className="block text-[11px] font-bold uppercase tracking-[0.1em] text-on-surface-variant dark:text-slate-500 mb-1">UMUMIY NARX</span>
-              <span className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">${totalPrice}</span>
+              <span className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{totalPrice.toLocaleString('uz-UZ')} so&apos;m</span>
             </div>
           </div>
           <button 

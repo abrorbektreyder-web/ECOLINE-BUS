@@ -57,8 +57,8 @@ function TicketSuccessContent() {
     pdf.save(`BusGo_Ticket_${orderId || 'DEMO'}.pdf`);
   };
 
-  const name = booking?.passenger_names?.[0] || nameInput;
-  const seats = booking?.seat_numbers?.[0] || seatsInput;
+  const name = booking?.passenger_name || nameInput;
+  const seats = booking?.seat_number || seatsInput;
   const from = booking?.trips?.origin?.name || fromInput;
   const to = booking?.trips?.destination?.name || toInput;
   const ticketId = booking?.id?.slice(0, 8).toUpperCase() || 'BG-99201-XT';

@@ -91,7 +91,20 @@ INSERT INTO public.trips (from_city, to_city, departure_time, arrival_time, pric
 -- TOSHKENT → URGANCH (10-11 soat, Xorazm)
 ('Toshkent', 'Urganch', NOW() + INTERVAL '0 days 1 hour', NOW() + INTERVAL '0 days 11 hours', 120000, 'VIP', 18, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Kofe', 'Konditsioner']),
 ('Toshkent', 'Urganch', NOW() + INTERVAL '1 day 2 hours', NOW() + INTERVAL '1 day 12 hours', 100000, 'Komfort', 34, ARRAY['Wi-Fi', 'USB', 'Konditsioner']),
-('Toshkent', 'Urganch', NOW() + INTERVAL '3 days 1 hour', NOW() + INTERVAL '3 days 11 hours', 120000, 'VIP', 16, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Kofe']);
+('Toshkent', 'Urganch', NOW() + INTERVAL '3 days 1 hour', NOW() + INTERVAL '3 days 11 hours', 120000, 'VIP', 16, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Kofe']),
+
+-- TOSHKENT → MOSKVA (65 soat, International)
+('Toshkent', 'Moskva', NOW() + INTERVAL '0 days 5 hours', NOW() + INTERVAL '2 days 18 hours', 1200000, 'International VIP', 45, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Issiq ovqat', 'Biotualet', 'Konditsioner']),
+('Toshkent', 'Moskva', NOW() + INTERVAL '2 days 10 hours', NOW() + INTERVAL '5 days 1 hours', 1100000, 'International Comfort', 50, ARRAY['Wi-Fi', 'USB', 'TV', 'Biotualet', 'Konditsioner']),
+
+-- MOSKVA → TOSHKENT
+('Moskva', 'Toshkent', NOW() + INTERVAL '1 day 5 hours', NOW() + INTERVAL '4 days 1 hours', 1200000, 'International VIP', 40, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Biotualet']),
+
+-- TOSHKENT → QOZON (Kazan)
+('Toshkent', 'Qozon', NOW() + INTERVAL '1 day 4 hours', NOW() + INTERVAL '3 days 4 hours', 1000000, 'International VIP', 45, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Biotualet']),
+
+-- TOSHKENT → GUANGZHOU (Guangzhou)
+('Toshkent', 'Guangzhou', NOW() + INTERVAL '0 days 12 hours', NOW() + INTERVAL '4 days 12 hours', 2500000, 'International VIP', 30, ARRAY['Wi-Fi', 'USB', 'TV', 'Yotoq joyi', 'Issiq ovqat', 'Biotualet']);
 
 -- Enable RLS policy for public read
 ALTER TABLE public.trips ENABLE ROW LEVEL SECURITY;

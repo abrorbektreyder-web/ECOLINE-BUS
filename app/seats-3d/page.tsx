@@ -82,7 +82,11 @@ function WebGLSeatsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [mounted, setMounted] = useState(false);
   
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
   const handleSeatClick = (name: string) => {
     setSelectedSeats(prev => 
       prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
@@ -106,42 +110,44 @@ function WebGLSeatsPage() {
       </header>
 
       {/* THREE.JS CANVAS */}
-      <Canvas shadows camera={{ position: [0, 5, 10], fov: 45 }}>
-        <color attach="background" args={['#0f172a']} />
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} castShadow shadow-mapSize={[1024, 1024]} />
-        <spotLight position={[-5, 10, -5]} intensity={0.5} angle={0.5} penumbra={1} castShadow />
+      {mounted && (
+        <Canvas shadows camera={{ position: [0, 5, 10], fov: 45 }}>
+          <color attach="background" args={['#0f172a']} />
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} castShadow shadow-mapSize={[1024, 1024]} />
+          <spotLight position={[-5, 10, -5]} intensity={0.5} angle={0.5} penumbra={1} castShadow />
 
-        {/* Bus Environment */}
-        <group position={[0, -0.5, 0]}>
-          {/* Floor */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-            <planeGeometry args={[4, 20]} />
-            <meshStandardMaterial color="#334155" roughness={0.8} />
-          </mesh>
-          <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.6} far={10} color="#000" />
-        </group>
+          {/* Bus Environment */}
+          <group position={[0, -0.5, 0]}>
+            {/* Floor */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+              <planeGeometry args={[4, 20]} />
+              <meshStandardMaterial color="#334155" roughness={0.8} />
+            </mesh>
+            <ContactShadows resolution={1024} scale={20} blur={2} opacity={0.6} far={10} color="#000" />
+          </group>
 
-        {/* Seats Mapping */}
-        {SEATS.map(seat => (
-          <Seat 
-            key={seat.id} 
-            data={seat} 
-            selected={selectedSeats.includes(seat.name)} 
-            onClick={handleSeatClick} 
+          {/* Seats Mapping */}
+          {SEATS.map(seat => (
+            <Seat 
+              key={seat.id} 
+              data={seat} 
+              selected={selectedSeats.includes(seat.name)} 
+              onClick={handleSeatClick} 
+            />
+          ))}
+
+          <OrbitControls 
+            enablePan={false}
+            minDistance={3}
+            maxDistance={15}
+            maxPolarAngle={Math.PI / 2 - 0.1}
+            minAzimuthAngle={-Math.PI / 4}
+            maxAzimuthAngle={Math.PI / 4}
           />
-        ))}
-
-        <OrbitControls 
-          enablePan={false}
-          minDistance={3}
-          maxDistance={15}
-          maxPolarAngle={Math.PI / 2 - 0.1}
-          minAzimuthAngle={-Math.PI / 4}
-          maxAzimuthAngle={Math.PI / 4}
-        />
-        <Environment preset="city" />
-      </Canvas>
+          <Environment preset="city" />
+        </Canvas>
+      )}
 
       {/* Bottom Action Bar */}
       <div className="absolute bottom-0 left-0 w-full p-6 z-10 pointer-events-none">

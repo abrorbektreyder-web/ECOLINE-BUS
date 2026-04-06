@@ -65,20 +65,18 @@ function BookingDetail() {
         .from('bookings')
         .insert([{
           trip_id: finalTripId,
-          seat_numbers: [parseInt(seats) || 12],
-          passenger_names: [formData.fullName],
-          passport_numbers: [formData.passport],
-          total_price: parseFloat(price) + (hasInsurance ? 12 : 0),
-          status: 'paid',
-          user_email: formData.email,
-          qr_code: uuidv4()
+          seat_number: parseInt(seats) || 12,
+          passenger_name: formData.fullName,
+          passport_id: formData.passport,
+          total_price: parseFloat(price) + (hasInsurance ? 15000 : 0),
+          status: 'paid'
         }])
         .select()
         .single();
 
       if (dbError) throw dbError;
 
-      const finalPrice = parseFloat(price) + (hasInsurance ? 12 : 0);
+      const finalPrice = parseFloat(price) + (hasInsurance ? 15000 : 0);
       router.push(`/ticket?from=${from}&to=${to}&seats=${seats}&price=${finalPrice}&name=${formData.fullName}&orderId=${data.id}&date=${encodeURIComponent(tripDate)}&time=${encodeURIComponent(tripTime)}`);
     } catch (err: any) {
       setError('To\'lovda xatolik yuz berdi: ' + err.message);
@@ -250,7 +248,7 @@ function BookingDetail() {
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div className="space-y-2">
               <h3 className="text-2xl font-black tracking-tight">Sayohat sug&apos;urtasi</h3>
-              <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo&apos;g&apos;i $12 evaziga sug&apos;urtalang.</p>
+              <p className="text-indigo-200 text-sm max-w-xs">Sayohatingizni bor-yo&apos;g&apos;i 15 000 so&apos;m evaziga sug&apos;urtalang.</p>
             </div>
             <button 
               onClick={() => setHasInsurance(!hasInsurance)}
@@ -273,7 +271,7 @@ function BookingDetail() {
       <nav className="fixed bottom-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-t-3xl shadow-[0px_-4px_12px_rgba(25,28,29,0.03)] flex justify-around items-center px-8 py-4">
         <div className="flex flex-col items-start">
           <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500">UMUMIY NARX</span>
-          <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100 tracking-tighter">${parseFloat(price) + (hasInsurance ? 12 : 0)}</span>
+          <span className="text-2xl font-black text-indigo-900 dark:text-indigo-100 tracking-tighter">{(parseFloat(price) + (hasInsurance ? 15000 : 0)).toLocaleString('uz-UZ')} so&apos;m</span>
         </div>
         <div className="flex gap-4">
           <button className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 py-2 hover:opacity-90 transition-opacity">
